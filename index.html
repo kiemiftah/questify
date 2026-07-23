@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUESTIFY - Learn. Play. Assess.</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Preload Core Assets -->
+    <link rel="preload" as="image" href="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Robot/3D/robot_3d.png">
+    <link rel="preload" as="image" href="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Rocket/3D/rocket_3d.png">
+
+    <style>
+        /* =========================================================
+           CSS VARIABLES & RESET
+           ========================================================= */
+        :root {
+            --primary-blue: #3498db;
+            --primary-purple: #9b59b6;
+            --gold: #f1c40f;
+            --dark-blue: #2c3e50;
+            --light-bg: #f7f9fa;
+            --white: #ffffff;
+            --gray: #bdc3c7;
+            --font-main: 'Nunito', sans-serif;
+
+            /* Stage Colors */
+            --stage1: #2ecc71; /* Green */
+            --stage2: #f39c12; /* Orange */
+            --stage3: #e74c3c; /* Red */
+            --stage4: #9b59b6; /* Purple */
+            --stage5: #34495e; /* Dark */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-main); }
+        body { background-color: var(--light-bg); color: var(--dark-blue); overflow-x: hidden; min-height: 100vh; display: flex; flex-direction: column; }
+        h1, h2, h3 { font-weight: 900; }
+        .text-center { text-align: center; }
+        .hidden { display: none !important; }
+        .bm-subtitle { font-size: 0.85em; color: #7f8c8d; font-weight: 400; display: block; margin-top: 4px; }
+        
+        /* =========================================================
+           3D ASSETS & FALLBACK
+           ========================================================= */
+        .asset-3d { display: block; max-width: 100%; height: auto; object-fit: contain; user-select: none; margin: 0 auto; }
+        .asset-wrapper { position: relative; display: inline-block; }
+        .asset-fallback { font-size: 3rem; display: flex; justify-content: center; align-items: center; }
+        
+        .hero-asset { width: clamp(120px, 20vw, 250px); }
+        .badge-icon { width: clamp(64px, 9vw, 110px); }
+        .nova-avatar { width: clamp(60px, 15vw, 100px); }
+
+        /* =========================================================
+           BUTTONS
+           ========================================================= */
+        .btn {
+            background: var(--primary-blue); color: var(--white); border: none; padding: 12px 24px;
+            font-size: 1.1rem; font-weight: 700; border-radius: 12px; cursor: pointer;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2); transition: all 0.1s ease; text-transform: uppercase;
+            min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin: 10px;
+        }
+        .btn:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
+        .btn-gold { background: var(--gold); color: var(--dark-blue); }
+        .btn-green { background: var(--stage1); }
+        .btn-outline { background: transparent; border: 2px solid var(--dark-blue); color: var(--dark-blue); box-shadow: none; }
+        .btn:disabled { background: var(--gray); box-shadow: 0 4px 0 #95a5a6; cursor: not-allowed; }
+
+        /* =========================================================
+           NAVIGATION & PROGRESS BAR
+           ========================================================= */
+        #top-nav { background: var(--white); padding: 15px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 10px;}
+        .progress-container { flex-grow: 1; margin: 0 20px; min-width: 200px; }
+        .progress-bar-bg { background: #ecf0f1; height: 20px; border-radius: 10px; overflow: hidden; }
+        .progress-bar-fill { background: var(--gold); height: 100%; width: 0%; transition: width 0.5s ease; }
+        .progress-text { font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; }
+
+        .nav-controls { display: flex; gap: 10px; }
+        .icon-btn { background: #ecf0f1; border: none; cursor: pointer; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s; font-size: 1.2rem;}
+        .icon-btn:hover { background: #e0e6ed; }
+
+        /* =========================================================
+           SCREEN LAYOUTS
+           ========================================================= */
+        .screen { flex: 1; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; animation: fadeIn 0.5s ease; width: 100%; }
+        
+        .screen-center { justify-content: center; min-height: 100vh; padding-top: 0; padding-bottom: 0; }
+        .screen-scroll { justify-content: flex-start; max-width: 1200px; margin: 0 auto; }
+
+        /* Start Screen (Centered) */
+        .start-container {
+            text-align: center; background: var(--white); padding: 40px; border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 600px; width: 100%; margin: auto;
+        }
+        .start-title { font-size: clamp(2.5rem, 5vw, 3.5rem); color: var(--primary-blue); text-shadow: 2px 2px 0px #2980b9; margin-bottom: 5px; letter-spacing: 2px; }
+        .start-tagline { font-size: 1.4rem; color: var(--primary-purple); margin-bottom: 30px; font-weight: bold; }
+        
+        .input-group { margin-bottom: 20px; }
+        .input-group input { width: 100%; padding: 15px; font-size: 1.2rem; border: 2px solid var(--gray); border-radius: 12px; text-align: center; outline: none; transition: border-color 0.3s;}
+        .input-group input:focus { border-color: var(--primary-blue); }
+
+        /* Dashboard Summary */
+        .dashboard-summary { background: var(--white); border-radius: 24px; padding: 20px 30px; width: 100%; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .dash-stat { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 1.2rem; }
+        .dash-stat img { width: 40px; }
+
+        /* =========================================================
+           MAP SCREEN
+           ========================================================= */
+        #map-container { width: 100%; display: flex; flex-direction: column; gap: 30px; }
+        .map-zone { background: var(--white); border-radius: 24px; padding: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); width: 100%; position: relative; border-left: 8px solid var(--gray); transition: border-color 0.3s ease; }
+        .zone-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px dashed #ecf0f1; padding-bottom: 10px; }
+        .zone-header h3 { font-size: 1.5rem; }
+        .zone-status { font-weight: bold; color: var(--gray); }
+        .zone-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+        
+        .level-card {
+            background: var(--light-bg); border-radius: 16px; padding: 20px; text-align: center;
+            border: 3px solid var(--gray); transition: transform 0.3s, border-color 0.3s; position: relative; cursor: pointer;
+        }
+        .level-card.locked { opacity: 0.6; filter: grayscale(1); cursor: not-allowed; }
+        .level-card.unlocked { border-color: var(--primary-blue); background: var(--white); }
+        .level-card.unlocked:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .level-card.completed { border-color: var(--gold); background: #fffcf0; }
+
+        .step-badge {
+            position: absolute; top: -10px; right: -10px; width: 30px; height: 30px;
+            background: var(--gray); color: white; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; border: 2px solid white;
+        }
+        .level-card.completed .step-badge { background: var(--gold); content: "✔"; color: transparent; }
+        .level-card.completed .step-badge::after { content: "✔"; color: var(--dark-blue); position: absolute; }
+
+        /* =========================================================
+           ACHIEVEMENT GALLERY
+           ========================================================= */
+        .badge-category { width: 100%; margin-bottom: 40px; }
+        .badge-category h3 { margin-bottom: 15px; border-bottom: 2px solid var(--gray); padding-bottom: 10px;}
+        .badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .badge-card { background: var(--white); border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .badge-card.locked { filter: grayscale(100%); opacity: 0.7; }
+        .badge-card.unlocked { border: 2px solid var(--gold); box-shadow: 0 0 15px rgba(241, 196, 15, 0.3); }
+        .badge-card h4 { font-size: 1rem; margin: 10px 0 5px; color: var(--dark-blue); }
+        .badge-desc { font-size: 0.8rem; color: #7f8c8d; }
+        .badge-lock-icon { position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; }
+        .badge-date { font-size: 0.7rem; color: var(--primary-blue); font-weight: bold; margin-top: 10px; }
+
+        /* =========================================================
+           EMBED CONTAINERS
+           ========================================================= */
+        .viewer-header { text-align: center; margin-bottom: 20px; }
+        .viewer-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; color: white; font-weight: bold; margin-bottom: 10px; font-size: 0.9rem;}
+        
+        .embed-container { width: 100%; max-width: 1100px; margin: 0 auto; border-radius: 24px; overflow: hidden; position: relative; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 4px solid var(--primary-blue); }
+        .embed-wrapper { display: none; }
+        .embed-wrapper.active { display: block; }
+        .embed-wrapper iframe { width: 100%; min-height: 600px; border: 0; display: block; }
+        .embed-placeholder { min-height: 600px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ecf0f1; padding: 20px; text-align: center; }
+        @media (max-width: 600px) { .embed-wrapper iframe, .embed-placeholder { min-height: 520px; } }
+
+        /* =========================================================
+           MODALS
+           ========================================================= */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(44, 62, 80, 0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; overflow-y: auto; }
+        .modal-content { background: var(--white); padding: 40px; border-radius: 24px; max-width: 600px; width: 100%; text-align: center; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.2); animation: bounceIn 0.5s ease; margin: auto; }
+        
+        /* Tip Layout */
+        #modal-tip .modal-content { border-top: 10px solid var(--gold); }
+        .tip-icon { font-size: 4rem; margin-bottom: 10px; animation: float 3s ease-in-out infinite; }
+
+        /* Badge Unlock */
+        #modal-badge-reveal .modal-content { background: linear-gradient(135deg, #fffcf0, #ffffff); border: 5px solid var(--gold); overflow: hidden; }
+        .badge-reveal-icon { width: 150px; margin: 20px auto; animation: badgeReveal 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .sparkles-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.5; background-image: radial-gradient(circle, var(--gold) 2px, transparent 2px); background-size: 30px 30px; animation: float 10s linear infinite; }
+
+        /* MCQ & Puzzle */
+        .options-grid { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+        .option-btn { background: var(--light-bg); border: 2px solid var(--primary-blue); padding: 15px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .option-btn:hover { background: #e3f2fd; }
+        .option-btn.wrong { background: var(--stage3); color: white; border-color: var(--stage3); animation: shake 0.4s; }
+        .word-bank { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 20px; }
+        .word-btn { background: var(--primary-blue); color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; user-select: none; }
+        .answer-box { min-height: 60px; border: 3px dashed var(--gray); border-radius: 12px; margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; padding: 10px; justify-content: center; align-items: center; background: #fafafa;}
+        .feedback-msg { margin-top: 15px; font-weight: bold; min-height: 24px; }
+
+        /* =========================================================
+           NOVA (3D Guide)
+           ========================================================= */
+        #nova-guide { position: fixed; bottom: -120px; right: 20px; display: flex; align-items: flex-end; gap: 15px; z-index: 50; transition: bottom 0.5s ease; }
+        #nova-guide.show { bottom: 20px; }
+        .speech-bubble { background: var(--white); padding: 15px 20px; border-radius: 20px 20px 0 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 250px; font-size: 0.95rem; border: 2px solid var(--primary-blue); animation: float 3s ease-in-out infinite; }
+        @media (max-width: 600px) { #nova-guide { right: 10px; gap: 5px; } .speech-bubble { max-width: 200px; font-size: 0.85rem; } }
+
+        /* =========================================================
+           ANIMATIONS
+           ========================================================= */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
+        @keyframes bounceIn { 0% { transform: scale(0.8); opacity: 0; } 60% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+        @keyframes badgeReveal { 0% { opacity: 0; transform: scale(0.4) rotate(-15deg); } 70% { opacity: 1; transform: scale(1.1) rotate(5deg); } 100% { opacity: 1; transform: scale(1) rotate(0); } }
+        
+        @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+        @media print {
+            body * { display: none !important; }
+            #certificate-modal, #certificate-modal * { display: block !important; }
+            #certificate-modal { position: absolute; left: 0; top: 0; margin: 0; padding: 0; min-height: 100vh; width: 100%; background: white; }
+            #certificate-modal .modal-content { box-shadow: none; border: 10px solid black; width: 100%; max-width: 100%; }
+            .btn { display: none !important; }
+            @page { size: landscape; margin: 1cm; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- =========================================================
+         TOP NAVIGATION
+         ========================================================= -->
+    <nav id="top-nav" class="hidden">
+        <div style="display: flex; gap: 10px;">
+            <button class="btn btn-outline" style="margin:0; padding: 8px 15px; font-size: 0.9rem;" onclick="navTo('map')" aria-label="Questify Map">🗺️ MAP</button>
+            <button class="btn btn-outline" style="margin:0; padding: 8px 15px; font-size: 0.9rem;" onclick="navTo('achievements')" aria-label="Achievement Gallery">🏆 ACHIEVEMENTS</button>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-text">Quest Progress: <span id="progress-percent">0</span>%</div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+        </div>
+
+        <div class="nav-controls">
+            <button class="icon-btn" onclick="toggleSound()" title="Sound Toggle">🔊</button>
+            <button class="icon-btn" onclick="confirmReset()" title="Reset Game">🔄</button>
+        </div>
+    </nav>
+
+    <!-- =========================================================
+         SCREEN 1: LOADING (Center)
+         ========================================================= -->
+    <section id="loading-screen" class="screen screen-center">
+        <div class="loader-icon text-center">
+            <svg viewBox="0 0 24 24" style="width: 100px; height: 100px; fill: var(--gold); animation: float 2s ease-in-out infinite;"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm-1 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>
+        </div>
+        <h2 class="text-center" style="color: white; margin-top: 20px;">Preparing Questify...</h2>
+    </section>
+
+    <!-- =========================================================
+         SCREEN 2: START SCREEN (Center)
+         ========================================================= -->
+    <section id="start-screen" class="screen screen-center hidden" style="background-color: var(--primary-blue);">
+        <div class="start-container">
+            <div class="asset-wrapper">
+                <img id="asset-rocket" src="" data-fallback="🚀" alt="Rocket" class="asset-3d hero-asset" loading="eager" fetchpriority="high">
+                <span class="asset-fallback" hidden>🚀</span>
+            </div>
+            
+            <h1 class="start-title" style="margin-top: 10px;">QUESTIFY</h1>
+            <p class="start-tagline">Learn. Play. Assess.</p>
+            <p style="margin-bottom: 25px; color: var(--dark-blue);">Topic: Simple Present Tense (+s/es/ies)</p>
+            
+            <div class="input-group">
+                <input type="text" id="player-name" placeholder="Please enter your name" maxlength="30" aria-label="Player Name" autocomplete="off">
+            </div>
+            
+            <button class="btn btn-green" style="width: 100%; font-size: 1.2rem; padding: 15px;" onclick="startGame()">START QUEST</button>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         SCREEN 3: MAP & DASHBOARD
+         ========================================================= -->
+    <section id="map-screen" class="screen screen-scroll hidden">
+        
+        <!-- Dashboard Summary -->
+        <div class="dashboard-summary">
+            <div class="dash-stat"><img id="dash-star" src="" data-fallback="⭐" class="asset-3d" alt="Stars"><span id="dash-star-count">0 / 15</span></div>
+            <div class="dash-stat"><img id="dash-key" src="" data-fallback="🔑" class="asset-3d" alt="Keys"><span id="dash-key-count">0 / 5</span></div>
+            <div class="dash-stat"><img id="dash-badge" src="" data-fallback="🛡️" class="asset-3d" alt="Badges"><span id="dash-badge-count">0 / 28</span></div>
+            <div style="text-align: right;">
+                <span class="bm-subtitle">Current Rank</span>
+                <strong id="dash-rank" style="color: var(--primary-blue); font-size: 1.2rem;">Novice</strong>
+            </div>
+        </div>
+
+        <h2 style="margin-bottom: 30px;">Questify Map</h2>
+        <!-- Map generated by JavaScript here -->
+        <div id="map-container"></div>
+    </section>
+
+    <!-- =========================================================
+         SCREEN 4: ACHIEVEMENT GALLERY
+         ========================================================= -->
+    <section id="achievements-screen" class="screen screen-scroll hidden">
+        <h2 style="margin-bottom: 10px;">Achievement Gallery</h2>
+        <p style="margin-bottom: 30px;">Collect all 28 badges to become a Legend!</p>
+        <div id="gallery-container" style="width: 100%;"></div>
+    </section>
+
+    <!-- =========================================================
+         SCREEN 5: VIEWER SCREEN
+         ========================================================= -->
+    <section id="viewer-screen" class="screen screen-scroll hidden">
+        <div class="viewer-header">
+            <div class="viewer-badge" id="viewer-badge">STAGE - TYPE</div>
+            <h2 id="viewer-title" style="color: var(--primary-blue);">Activity Title</h2>
+            <span class="bm-subtitle" id="viewer-subtitle">Activity instructions</span>
+        </div>
+
+        <div class="embed-container">
+            <!-- ========================================================= -->
+            <!-- STAGE 1: THE QUEST BEGINS -->
+            <!-- ========================================================= -->
+            <div id="embed-0" class="embed-wrapper"><div class="embed-placeholder"><h3>Interactive Video</h3><p>Paste Lumi/H5P code here (Stage 1 - Learn)</p></div></div>
+            <div id="embed-1" class="embed-wrapper"><div class="embed-placeholder"><h3>Scratch Game</h3><p>Paste Scratch code here (Stage 1 - Play)</p></div></div>
+            <div id="embed-2" class="embed-wrapper"><div class="embed-placeholder"><h3>Assessment Quiz</h3><p>Paste Google Forms code here (Stage 1 - Assess)</p></div></div>
+
+            <!-- ========================================================= -->
+            <!-- STAGE 2: EXPLORER TRAIL -->
+            <!-- ========================================================= -->
+            <div id="embed-3" class="embed-wrapper"><div class="embed-placeholder"><h3>Interactive Video</h3><p>Paste Lumi/H5P code here (Stage 2 - Learn)</p></div></div>
+            <div id="embed-4" class="embed-wrapper"><div class="embed-placeholder"><h3>Scratch Game</h3><p>Paste Scratch code here (Stage 2 - Play)</p></div></div>
+            <div id="embed-5" class="embed-wrapper"><div class="embed-placeholder"><h3>Assessment Quiz</h3><p>Paste Google Forms code here (Stage 2 - Assess)</p></div></div>
+
+            <!-- ========================================================= -->
+            <!-- STAGE 3: CHALLENGE ZONE -->
+            <!-- ========================================================= -->
+            <div id="embed-6" class="embed-wrapper"><div class="embed-placeholder"><h3>Interactive Video</h3><p>Paste Lumi/H5P code here (Stage 3 - Learn)</p></div></div>
+            <div id="embed-7" class="embed-wrapper"><div class="embed-placeholder"><h3>Scratch Game</h3><p>Paste Scratch code here (Stage 3 - Play)</p></div></div>
+            <div id="embed-8" class="embed-wrapper"><div class="embed-placeholder"><h3>Assessment Quiz</h3><p>Paste Google Forms code here (Stage 3 - Assess)</p></div></div>
+
+            <!-- ========================================================= -->
+            <!-- STAGE 4: HERO MISSION -->
+            <!-- ========================================================= -->
+            <div id="embed-9" class="embed-wrapper"><div class="embed-placeholder"><h3>Interactive Video</h3><p>Paste Lumi/H5P code here (Stage 4 - Learn)</p></div></div>
+            <div id="embed-10" class="embed-wrapper"><div class="embed-placeholder"><h3>Scratch Game</h3><p>Paste Scratch code here (Stage 4 - Play)</p></div></div>
+            <div id="embed-11" class="embed-wrapper"><div class="embed-placeholder"><h3>Assessment Quiz</h3><p>Paste Google Forms code here (Stage 4 - Assess)</p></div></div>
+
+            <!-- ========================================================= -->
+            <!-- STAGE 5: LEGEND QUEST -->
+            <!-- ========================================================= -->
+            <div id="embed-12" class="embed-wrapper"><div class="embed-placeholder"><h3>Interactive Video</h3><p>Paste Lumi/H5P code here (Stage 5 - Learn)</p></div></div>
+            <div id="embed-13" class="embed-wrapper"><div class="embed-placeholder"><h3>Scratch Game</h3><p>Paste Scratch code here (Stage 5 - Play)</p></div></div>
+            <div id="embed-14" class="embed-wrapper"><div class="embed-placeholder"><h3>Assessment Quiz</h3><p>Paste Google Forms code here (Stage 5 - Assess)</p></div></div>
+        </div>
+
+        <div class="completion-area">
+            <button class="btn btn-blue" id="btn-complete-step" onclick="triggerChallenge()">I HAVE COMPLETED THIS</button>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         SCREEN 6: VICTORY SCREEN
+         ========================================================= -->
+    <section id="victory-screen" class="screen screen-center hidden">
+        <h1 class="start-title" style="color: var(--gold);">QUEST COMPLETED!</h1>
+        <div class="asset-wrapper" style="margin: 20px 0;">
+            <img id="asset-victory" src="" data-fallback="🎉" class="asset-3d hero-asset" alt="Victory">
+            <span class="asset-fallback" hidden>🎉</span>
+        </div>
+        <h2 id="victory-message" style="margin-bottom: 20px;">Congratulations, Legend!</h2>
+        
+        <div style="background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 500px; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+            <p style="font-size: 1.2rem; margin-bottom: 10px;">You collected <strong id="vic-stars" style="color:var(--gold);">15</strong> of 15 stars.</p>
+            <p style="font-size: 1.2rem; margin-bottom: 10px;">You unlocked <strong id="vic-badges" style="color:var(--primary-blue);">28</strong> of 28 badges.</p>
+            <p style="font-size: 1.2rem; font-weight: bold; color: var(--primary-purple);">You are now a Questify Legend!</p>
+        </div>
+        
+        <div>
+            <button class="btn btn-gold" onclick="showCertificate()">VIEW CERTIFICATE</button>
+            <button class="btn btn-outline" onclick="navTo('achievements')">ACHIEVEMENT GALLERY</button>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         MODALS
+         ========================================================= -->
+    <!-- Tips Modal -->
+    <div id="modal-tip" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="tip-icon">💡</div>
+            <h3 id="tip-title" style="color: var(--primary-blue); font-size: 1.8rem; margin-bottom: 10px;">Quick Tips</h3>
+            <p id="tip-desc" style="font-size: 1.2rem; color: var(--dark-blue); margin-bottom: 30px; font-weight: bold; line-height: 1.5;">Read the instructions here</p>
+            
+            <button class="btn btn-green" id="btn-start-viewer" style="width: 100%; font-size: 1.1rem;">CONTINUE TO ACTIVITY</button>
+            <button class="btn btn-outline" style="width: 100%; margin-top: 10px;" onclick="closeModal('modal-tip')">BACK TO MAP</button>
+        </div>
+    </div>
+
+    <!-- MCQ Modal -->
+    <div id="modal-mcq" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 id="mcq-title" style="color: var(--primary-blue);">Mini Challenge</h3>
+            <p>Answer this question to record your progress.</p>
+            <p id="mcq-question" style="font-size: 1.2rem; font-weight: bold; margin: 15px 0;">Question?</p>
+            <div class="options-grid" id="mcq-options"></div>
+            <div id="mcq-feedback" class="feedback-msg"></div>
+            <button class="btn btn-gold hidden" id="btn-mcq-next" onclick="completeCurrentStep()">CONTINUE</button>
+            <button class="btn btn-outline" onclick="closeModal('modal-mcq')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Puzzle Modal -->
+    <div id="modal-puzzle" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 id="puzzle-title" style="color: var(--primary-green);">Mini Challenge: Arrange</h3>
+            <p>Arrange the words to make a correct sentence.</p>
+            <div class="answer-box" id="puzzle-answer-box"></div>
+            <div class="word-bank" id="puzzle-word-bank"></div>
+            <div id="puzzle-feedback" class="feedback-msg"></div>
+            <button class="btn btn-gold hidden" id="btn-puzzle-next" onclick="completeCurrentStep()">CONTINUE</button>
+            <button class="btn btn-outline" onclick="closeModal('modal-puzzle')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Badge Unlock Modal -->
+    <div id="modal-badge-reveal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="sparkles-overlay"></div>
+            <h2 style="color: var(--gold); margin-bottom: 10px;">ACHIEVEMENT UNLOCKED!</h2>
+            <div class="asset-wrapper badge-reveal-icon">
+                <img id="reveal-badge-icon" src="" data-fallback="🛡️" class="asset-3d" alt="Badge">
+                <span class="asset-fallback" hidden>🛡️</span>
+            </div>
+            <h1 id="reveal-badge-title" style="color: var(--dark-blue); font-size: 2rem;">Badge Name</h1>
+            <p id="reveal-badge-desc" style="font-size: 1.1rem; color: #7f8c8d; margin-top: 10px;">Badge Description</p>
+            <br><button class="btn btn-gold" style="position: relative; z-index: 10;" onclick="closeBadgeReveal()">AWESOME!</button>
+        </div>
+    </div>
+
+    <!-- Certificate Modal -->
+    <div id="certificate-modal" class="modal-overlay hidden">
+        <div class="modal-content" style="background: #fffdf2; border: 15px solid var(--gold);">
+            <div class="asset-wrapper" style="width: 80px; margin: 0 auto 10px;">
+                <img id="cert-icon" src="" data-fallback="👑" class="asset-3d" alt="Crown">
+                <span class="asset-fallback" hidden>👑</span>
+            </div>
+            <h2 style="font-size: 2rem; color: var(--dark-blue); font-family: 'Georgia', serif;">CERTIFICATE OF ACHIEVEMENT</h2>
+            <p style="margin-top: 10px;">This is proudly awarded to</p>
+            <h1 id="cert-student-name" style="font-size: 2.5rem; color: var(--primary-purple); border-bottom: 2px solid var(--gray); display: inline-block; padding: 0 20px; margin: 20px 0; font-family: 'Georgia', serif; font-style: italic;">Student Name</h1>
+            <p>for successfully completing</p>
+            <h3 style="font-size: 1.5rem; margin-top: 10px;">QUESTIFY: Learn. Play. Assess.</h3>
+            
+            <div style="margin-top: 30px; display: flex; justify-content: space-around; font-weight: bold; background: white; padding: 15px; border-radius: 12px;">
+                <div>Rank: <br><span id="cert-rank" style="color:var(--primary-blue); font-size: 1.2rem;">Legend</span></div>
+                <div>Stars: <br><span id="cert-stars" style="color:var(--gold); font-size: 1.2rem;">15</span></div>
+                <div>Badges: <br><span id="cert-badges" style="color:var(--primary-purple); font-size: 1.2rem;">28</span></div>
+            </div>
+            <p style="margin-top: 20px; font-size: 0.9rem; color: gray;">Date Completed: <span id="cert-date"></span></p>
+            <br>
+            <button class="btn btn-blue" onclick="window.print()">PRINT CERTIFICATE</button>
+            <button class="btn btn-outline" onclick="closeModal('certificate-modal')">CLOSE</button>
+        </div>
+    </div>
+
+    <!-- Alert / Confirm -->
+    <div id="modal-alert" class="modal-overlay hidden"><div class="modal-content"><h3 id="alert-title">Notice</h3><p id="alert-message"></p><br><button class="btn btn-blue" onclick="closeModal('modal-alert')">OK</button></div></div>
+    <div id="modal-confirm" class="modal-overlay hidden"><div class="modal-content"><h3 style="color: var(--stage3);">Reset Game?</h3><p>Are you sure you want to delete all progress and <b>all badges</b>?</p><br><button class="btn btn-outline" style="background: var(--stage3); color: white;" onclick="resetGame()">Yes, Delete</button><button class="btn btn-outline" onclick="closeModal('modal-confirm')">Cancel</button></div></div>
+
+    <!-- =========================================================
+         NOVA (3D Guide)
+         ========================================================= -->
+    <div id="nova-guide">
+        <div class="speech-bubble"><p id="nova-text">Hello! I am Nova.</p></div>
+        <div class="asset-wrapper nova-avatar">
+            <img id="asset-nova" src="" data-fallback="🤖" class="asset-3d" alt="Nova">
+            <span class="asset-fallback" hidden>🤖</span>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         JAVASCRIPT LOGIC
+         ========================================================= -->
+    <script>
+        /* =========================================================
+           1. CONFIGURATION & ASSETS
+           ========================================================= */
+        const gameConfig = { appName: "Questify", enableSound: true };
+
+        const ASSET_URLS = {
+            brand: {
+                nova: "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Robot/3D/robot_3d.png",
+                rocket: "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Rocket/3D/rocket_3d.png",
+                celebration: "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Party%20popper/3D/party_popper_3d.png"
+            },
+            checkpoints: {
+                learn: "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Open%20book/3D/open_book_3d.png",
+                play: "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Video%20game/3D/video_game_3d.png",
+                assess: "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Memo/3D/memo_3d.png"
+            },
+            rewards: {
+                star: "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Star/3D/star_3d.png",
+                key: "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Key/3D/key_3d.png",
+                trophy: "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Trophy/3D/trophy_3d.png",
+                medal: "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/1st%20place%20medal/3D/1st_place_medal_3d.png",
+                gem: "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Gem%20stone/3D/gem_stone_3d.png",
+                locked: "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Locked/3D/locked_3d.png",
+                unlocked: "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Unlocked/3D/unlocked_3d.png"
+            },
+            stageBadges: {
+                explorer: "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Compass/3D/compass_3d.png",
+                adventurer: "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/World%20map/3D/world_map_3d.png",
+                challenger: "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Bullseye/3D/bullseye_3d.png",
+                hero: "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Shield/3D/shield_3d.png",
+                legend: "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Crown/3D/crown_3d.png"
+            }
+        };
+
+        const ranks = ["Novice", "Explorer", "Adventurer", "Challenger", "Hero", "Legend"];
+        const stageColors = ['var(--stage1)', 'var(--stage2)', 'var(--stage3)', 'var(--stage4)', 'var(--stage5)'];
+        const stageNames = ["The Quest Begins", "Explorer Trail", "Challenge Zone", "Hero Mission", "Legend Quest"];
+
+        /* =========================================================
+           2. TIPS DATA (TRANSLATED)
+           ========================================================= */
+        const levelTips = [
+            "Basic Tip: Most verbs just need an 's' if the doer is He, She, or It.",
+            "Play Tip: Read carefully and arrange the words one by one.",
+            "Quiz Tip: Remember the rules you just learned. Is the subject 'He' or 'She'?",
+            "Basic Tip: If the verb ends with s, sh, ch, x, or o, add 'es' (example: go -> goes).",
+            "Play Tip: Look at the ending spelling of the verb before choosing your answer.",
+            "Quiz Tip: Watch the spelling closely. Remember s, sh, ch, x, o!",
+            "Basic Tip: Don't get confused by 'I' or 'You'. They DO NOT need 's' or 'es'!",
+            "Play Tip: Think about the subject of the sentence. Is it singular or plural?",
+            "Quiz Tip: Read slowly. Make sure you pick the most accurate spelling.",
+            "Basic Tip: If the verb ends with a consonant + y, change 'y' to 'i' and add 'es'.",
+            "Play Tip: Careful! The 'ies' rule is only for consonants + y. Example: fly -> flies.",
+            "Quiz Tip: Test your memory. Is it 'ys' or 'ies'?",
+            "Basic Tip: You are at the final stage! Review all the rules: +s, +es, and +ies.",
+            "Play Tip: Give your full attention. Prove that you have mastered it!",
+            "Quiz Tip: This is your final challenge. You can do it, Legend!"
+        ];
+
+        /* =========================================================
+           3. BADGES & MINI CHALLENGES DATA
+           ========================================================= */
+        const masterBadges = [
+            { id: "first-spark", category: "checkpoint", title: "First Spark", desc: "Completed the first learning mission.", icon: ASSET_URLS.checkpoints.learn },
+            { id: "play-starter", category: "checkpoint", title: "Play Starter", desc: "Completed the first interactive challenge.", icon: ASSET_URLS.checkpoints.play },
+            { id: "quest-starter", category: "checkpoint", title: "Quest Starter", desc: "Passed the first assessment.", icon: ASSET_URLS.checkpoints.assess },
+            { id: "explorer-badge", category: "stage", title: "Explorer Badge", desc: "Completed Stage 1: The Quest Begins.", icon: ASSET_URLS.stageBadges.explorer },
+            
+            { id: "trail-thinker", category: "checkpoint", title: "Trail Thinker", desc: "Learned skills for Explorer Trail.", icon: ASSET_URLS.checkpoints.learn },
+            { id: "adventure-player", category: "checkpoint", title: "Adventure Player", desc: "Completed Explorer Trail activity.", icon: ASSET_URLS.checkpoints.play },
+            { id: "trail-ace", category: "checkpoint", title: "Trail Ace", desc: "Passed Explorer Trail assessment.", icon: ASSET_URLS.checkpoints.assess },
+            { id: "adventurer-badge", category: "stage", title: "Adventurer Badge", desc: "Completed Stage 2: Explorer Trail.", icon: ASSET_URLS.stageBadges.adventurer },
+
+            { id: "challenge-mind", category: "checkpoint", title: "Challenge Mind", desc: "Learned Challenge Zone concepts.", icon: ASSET_URLS.checkpoints.learn },
+            { id: "puzzle-breaker", category: "checkpoint", title: "Puzzle Breaker", desc: "Solved Challenge Zone activity.", icon: ASSET_URLS.checkpoints.play },
+            { id: "challenge-ace", category: "checkpoint", title: "Challenge Ace", desc: "Passed Challenge Zone assessment.", icon: ASSET_URLS.checkpoints.assess },
+            { id: "challenger-badge", category: "stage", title: "Challenger Badge", desc: "Completed Stage 3: Challenge Zone.", icon: ASSET_URLS.stageBadges.challenger },
+
+            { id: "hero-thinker", category: "checkpoint", title: "Hero Thinker", desc: "Completed Hero Mission lesson.", icon: ASSET_URLS.checkpoints.learn },
+            { id: "mission-player", category: "checkpoint", title: "Mission Player", desc: "Completed Hero Mission activity.", icon: ASSET_URLS.checkpoints.play },
+            { id: "hero-ace", category: "checkpoint", title: "Hero Ace", desc: "Passed Hero Mission assessment.", icon: ASSET_URLS.checkpoints.assess },
+            { id: "hero-badge", category: "stage", title: "Hero Badge", desc: "Completed Stage 4: Hero Mission.", icon: ASSET_URLS.stageBadges.hero },
+
+            { id: "legend-mind", category: "checkpoint", title: "Legend Mind", desc: "Completed final learning mission.", icon: ASSET_URLS.checkpoints.learn },
+            { id: "legend-player", category: "checkpoint", title: "Legend Player", desc: "Completed final interactive challenge.", icon: ASSET_URLS.checkpoints.play },
+            { id: "legend-master", category: "checkpoint", title: "Legend Master", desc: "Passed the final assessment.", icon: ASSET_URLS.checkpoints.assess },
+            { id: "legend-badge", category: "stage", title: "Legend Badge", desc: "Completed Stage 5: Legend Quest.", icon: ASSET_URLS.stageBadges.legend },
+
+            { id: "first-star", category: "bonus", title: "First Star", desc: "Collect the first star.", icon: ASSET_URLS.rewards.star },
+            { id: "star-collector", category: "bonus", title: "Star Collector", desc: "Collect 5 stars.", icon: ASSET_URLS.rewards.star },
+            { id: "super-collector", category: "bonus", title: "Super Collector", desc: "Collect 10 stars.", icon: ASSET_URLS.rewards.star },
+            { id: "all-star", category: "bonus", title: "All-Star", desc: "Collect all 15 stars.", icon: ASSET_URLS.rewards.star },
+            { id: "perfect-run", category: "bonus", title: "Perfect Run", desc: "Complete assess on first attempt.", icon: ASSET_URLS.rewards.medal },
+            { id: "hint-free-hero", category: "bonus", title: "Hint-Free Hero", desc: "Complete a stage without hints.", icon: ASSET_URLS.rewards.gem },
+            { id: "comeback-kid", category: "bonus", title: "Comeback Kid", desc: "Recovered from a mistake.", icon: ASSET_URLS.brand.sparkles },
+            { id: "key-keeper", category: "bonus", title: "Key Keeper", desc: "Collect all five stage keys.", icon: ASSET_URLS.rewards.key }
+        ];
+
+        const challenges = [
+            { type: 'mcq', q: "Choose the correct sentence:", opts: ["He run fast.", "He runs fast.", "He running fast."], ans: 1 },
+            { type: 'puzzle', words: ["She", "reads", "a", "book."] },
+            { type: 'mcq', q: "It _____ the ball.", opts: ["catch", "catches", "catching"], ans: 1, isKey: true },
+            { type: 'mcq', q: "Ali _____ to school.", opts: ["go", "goes", "goies"], ans: 1 },
+            { type: 'puzzle', words: ["He", "washes", "his", "hands."] },
+            { type: 'mcq', q: "The boy _____ television.", opts: ["watch", "watchs", "watches"], ans: 2, isKey: true },
+            { type: 'mcq', q: "Sara _____ her teeth.", opts: ["brushs", "brushes", "brush"], ans: 1 },
+            { type: 'puzzle', words: ["It", "fixes", "the", "toy."] },
+            { type: 'mcq', q: "My father _____ the car.", opts: ["wash", "washes", "washs"], ans: 1, isKey: true },
+            { type: 'mcq', q: "The bird _____ high.", opts: ["flys", "flies", "fly"], ans: 1 },
+            { type: 'puzzle', words: ["The", "baby", "cries", "loudly."] },
+            { type: 'mcq', q: "He _____ his best.", opts: ["trys", "tries", "try"], ans: 1, isKey: true },
+            { type: 'mcq', q: "She _____ English.", opts: ["study", "studys", "studies"], ans: 2 },
+            { type: 'puzzle', words: ["He", "carries", "the", "box."] },
+            { type: 'mcq', q: "The dog _____ the bone.", opts: ["burys", "buries", "bury"], ans: 1, isKey: true }
+        ];
+
+        /* =========================================================
+           4. STATE MANAGEMENT & AUDIO
+           ========================================================= */
+        const STORAGE_KEY = "questifyData_V5";
+        let gameState = {
+            name: "", maxUnlockedStep: 0, stars: 0, keys: 0, rankIndex: 0,
+            unlockedBadges: [], badgeDates: {},
+            stats: { failsCurrentStage: 0, hintsCurrentStage: 0, totalComebacks: 0 }
+        };
+
+        let currentViewingStep = 0;
+        let badgeQueue = [];
+        let stepAttempts = 0;
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            if (!gameConfig.enableSound) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator(); const gainNode = audioCtx.createGain();
+            osc.connect(gainNode); gainNode.connect(audioCtx.destination); const now = audioCtx.currentTime;
+            
+            if (type === 'success') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(440, now); osc.frequency.exponentialRampToValueAtTime(880, now + 0.1);
+                gainNode.gain.setValueAtTime(0.5, now); gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(now); osc.stop(now + 0.3);
+            } else if (type === 'error') {
+                osc.type = 'square'; osc.frequency.setValueAtTime(300, now); osc.frequency.exponentialRampToValueAtTime(150, now + 0.2);
+                gainNode.gain.setValueAtTime(0.3, now); gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(now); osc.stop(now + 0.3);
+            } else if (type === 'unlock') {
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(523.25, now); osc.frequency.setValueAtTime(659.25, now + 0.1); osc.frequency.setValueAtTime(783.99, now + 0.2);
+                gainNode.gain.setValueAtTime(0.3, now); gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.5); osc.start(now); osc.stop(now + 0.5);
+            }
+        }
+
+        /* =========================================================
+           5. INITIALIZATION & RENDERING
+           ========================================================= */
+        window.onload = () => {
+            initFallbackImages(); injectStaticImages();
+            
+            setTimeout(() => {
+                loadGame(); renderMap(); renderAchievementGallery();
+                if (gameState.name === "") {
+                    navTo('start');
+                    document.getElementById('start-screen').classList.add('screen-center');
+                }
+                else { navTo('map'); updateDashboard(); }
+            }, 1000);
+        };
+
+        function initFallbackImages() {
+            document.querySelectorAll("img[data-fallback]").forEach((img) => {
+                img.addEventListener("error", () => {
+                    img.hidden = true;
+                    if (img.nextElementSibling) img.nextElementSibling.hidden = false;
+                });
+            });
+        }
+        function injectStaticImages() {
+            document.getElementById('asset-rocket').src = ASSET_URLS.brand.rocket;
+            document.getElementById('dash-star').src = ASSET_URLS.rewards.star;
+            document.getElementById('dash-key').src = ASSET_URLS.rewards.key;
+            document.getElementById('dash-badge').src = ASSET_URLS.rewards.trophy;
+            document.getElementById('asset-nova').src = ASSET_URLS.brand.nova;
+            document.getElementById('asset-victory').src = ASSET_URLS.brand.celebration;
+            document.getElementById('cert-icon').src = ASSET_URLS.stageBadges.legend;
+        }
+
+        function renderMap() {
+            const container = document.getElementById('map-container'); container.innerHTML = "";
+            let stepCounter = 0;
+            for(let stage = 0; stage < 5; stage++) {
+                let html = `<div class="map-zone" style="border-left-color: ${stageColors[stage]}">
+                    <div class="zone-header"><h3 style="color: ${stageColors[stage]}">STAGE ${stage+1}: ${stageNames[stage]}</h3><span class="zone-status" id="status-stage-${stage}">Locked</span></div>
+                    <div class="zone-grid">`;
+                const types = ["Learn", "Play", "Assess"];
+                const icons = [ASSET_URLS.checkpoints.learn, ASSET_URLS.checkpoints.play, ASSET_URLS.checkpoints.assess];
+                
+                for(let i=0; i<3; i++) {
+                    const stepId = stepCounter;
+                    html += `<div class="level-card locked" id="card-step-${stepId}" onclick="showLevelTip(${stepId})">
+                            <div class="step-badge">${stepId+1}</div>
+                            <div class="asset-wrapper" style="width: 50px; height: 50px; margin: 0 auto 10px;">
+                                <img src="${icons[i]}" data-fallback="📘" class="asset-3d" alt="${types[i]}"><span class="asset-fallback" hidden>📘</span>
+                            </div>
+                            <h3>${types[i]}</h3>
+                        </div>`;
+                    stepCounter++;
+                }
+                html += `</div></div>`; container.innerHTML += html;
+            }
+            initFallbackImages();
+        }
+
+        function updateDashboard() {
+            document.getElementById('dash-star-count').innerText = `${gameState.stars} / 15`;
+            document.getElementById('dash-key-count').innerText = `${gameState.keys} / 5`;
+            document.getElementById('dash-badge-count').innerText = `${gameState.unlockedBadges.length} / 28`;
+            document.getElementById('dash-rank').innerText = ranks[gameState.rankIndex];
+            
+            let percent = Math.round((gameState.maxUnlockedStep / 15) * 100);
+            if(percent > 100) percent = 100;
+            document.getElementById('progress-percent').innerText = percent;
+            document.getElementById('progress-fill').style.width = `${percent}%`;
+
+            for(let i=0; i<15; i++) {
+                const card = document.getElementById(`card-step-${i}`); if(!card) continue;
+                if (i < gameState.maxUnlockedStep) card.className = "level-card completed";
+                else if (i === gameState.maxUnlockedStep) card.className = "level-card unlocked";
+                else card.className = "level-card locked";
+            }
+            for(let stage = 0; stage < 5; stage++) {
+                const statusSpan = document.getElementById(`status-stage-${stage}`);
+                if (gameState.maxUnlockedStep >= (stage + 1) * 3) { statusSpan.innerText = "Completed!"; statusSpan.style.color = stageColors[stage]; }
+                else if (gameState.maxUnlockedStep >= stage * 3) { statusSpan.innerText = "Active"; statusSpan.style.color = stageColors[stage]; }
+                else { statusSpan.innerText = "Locked"; statusSpan.style.color = "var(--gray)"; }
+            }
+            renderAchievementGallery();
+        }
+
+        /* =========================================================
+           6. MAIN NAVIGATION
+           ========================================================= */
+        const screens = ['loading-screen', 'start-screen', 'map-screen', 'viewer-screen', 'achievements-screen', 'victory-screen'];
+        function navTo(screenId) {
+            screens.forEach(s => document.getElementById(s).classList.add('hidden'));
+            document.getElementById(screenId + '-screen').classList.remove('hidden');
+            
+            if(screenId === 'start' || screenId === 'loading') { document.getElementById('top-nav').classList.add('hidden'); hideNova(); }
+            else { document.getElementById('top-nav').classList.remove('hidden'); }
+            
+            if(screenId === 'map') showNova("Choose your next task, " + gameState.name + "!");
+            if(screenId === 'achievements') showNova("Here is your badge collection.");
+        }
+
+        function startGame() {
+            const nameInput = document.getElementById('player-name').value.trim();
+            if (nameInput === "") { showAlert("Please enter your name!"); return; }
+            gameState.name = nameInput; saveGame(); navTo('map'); updateDashboard();
+        }
+
+        /* =========================================================
+           7. QUICK TIPS MODAL SYSTEM
+           ========================================================= */
+        function showLevelTip(stepIndex) {
+            if (stepIndex > gameState.maxUnlockedStep) {
+                playSound('error'); showNova("Locked! Complete the previous task first.");
+                const card = document.getElementById(`card-step-${stepIndex}`);
+                if(card) { card.style.animation = "shake 0.4s"; setTimeout(() => card.style.animation = "", 400); }
+                return;
+            }
+            
+            const stageIndex = Math.floor(stepIndex / 3);
+            const stepTypes = ["Learn", "Play", "Assess"];
+            
+            document.getElementById('tip-title').innerText = `Tips: Stage ${stageIndex+1} (${stepTypes[stepIndex%3]})`;
+            document.getElementById('tip-title').style.color = stageColors[stageIndex];
+            
+            document.getElementById('tip-desc').innerText = levelTips[stepIndex];
+            
+            const btnStart = document.getElementById('btn-start-viewer');
+            btnStart.style.backgroundColor = stageColors[stageIndex];
+            btnStart.onclick = () => {
+                closeModal('modal-tip');
+                openViewer(stepIndex);
+            };
+
+            document.getElementById('modal-tip').classList.remove('hidden');
+            showNova("Read these tips before you start!");
+        }
+
+        /* =========================================================
+           8. CHALLENGE & VIEWER LOGIC
+           ========================================================= */
+        function openViewer(stepIndex) {
+            currentViewingStep = stepIndex; stepAttempts = 0;
+            const stageIndex = Math.floor(stepIndex / 3);
+            const stepTypes = ["LEARN", "PLAY", "ASSESS"];
+            const stepType = stepTypes[stepIndex % 3];
+            
+            document.getElementById('viewer-badge').innerText = `STAGE ${stageIndex+1} - ${stepType}`;
+            document.getElementById('viewer-badge').style.backgroundColor = stageColors[stageIndex];
+            document.getElementById('viewer-title').innerText = stageNames[stageIndex];
+            document.getElementById('viewer-title').style.color = stageColors[stageIndex];
+            
+            document.querySelectorAll('.embed-wrapper').forEach(el => el.classList.remove('active'));
+            const embedDiv = document.getElementById(`embed-${stepIndex}`);
+            if(embedDiv) embedDiv.classList.add('active');
+            
+            navTo('viewer');
+            if(stepType==='LEARN') showNova("Watch this video carefully!");
+            else if(stepType==='PLAY') showNova("Let's play and gain some experience.");
+            else showNova("Answer the quiz to get the key!");
+        }
+
+        function triggerChallenge() {
+            if (currentViewingStep < gameState.maxUnlockedStep) { navTo('map'); return; }
+            const challenge = challenges[currentViewingStep];
+            if (challenge.type === 'mcq') { setupMCQ(challenge); document.getElementById('modal-mcq').classList.remove('hidden'); } 
+            else if (challenge.type === 'puzzle') { setupPuzzle(challenge); document.getElementById('modal-puzzle').classList.remove('hidden'); }
+        }
+
+        function setupMCQ(data) {
+            document.getElementById('mcq-question').innerText = data.q;
+            const optionsGrid = document.getElementById('mcq-options'); optionsGrid.innerHTML = '';
+            document.getElementById('mcq-feedback').innerText = ''; document.getElementById('btn-mcq-next').classList.add('hidden');
+            data.opts.forEach((optText, index) => {
+                let btn = document.createElement('button'); btn.className = 'option-btn'; btn.innerText = optText;
+                btn.onclick = () => checkMCQ(btn, index === data.ans); optionsGrid.appendChild(btn);
+            });
+        }
+        function checkMCQ(btn, isCorrect) {
+            stepAttempts++;
+            if(isCorrect) {
+                playSound('success'); btn.style.background = stageColors[Math.floor(currentViewingStep/3)]; btn.style.color = "white";
+                document.getElementById('mcq-feedback').innerText = "Exactly right!"; document.getElementById('mcq-feedback').style.color = "var(--primary-blue)";
+                document.getElementById('btn-mcq-next').classList.remove('hidden');
+                document.querySelectorAll('#mcq-options .option-btn').forEach(b => b.disabled = true);
+                if(stepAttempts > 1) gameState.stats.totalComebacks++;
+            } else {
+                playSound('error'); btn.classList.add('wrong'); setTimeout(() => btn.classList.remove('wrong'), 400);
+                document.getElementById('mcq-feedback').innerText = "Not quite right. Try again!"; document.getElementById('mcq-feedback').style.color = "var(--stage3)";
+                gameState.stats.failsCurrentStage++;
+            }
+        }
+
+        let currPuzzleWords = [], puzzleShuffled = [], puzzleAnswer = [];
+        function setupPuzzle(data) {
+            currPuzzleWords = data.words; puzzleShuffled = [...currPuzzleWords].sort(() => Math.random() - 0.5); puzzleAnswer = [];
+            document.getElementById('puzzle-feedback').innerText = ""; document.getElementById('btn-puzzle-next').classList.add('hidden'); renderPuzzle();
+        }
+        function renderPuzzle() {
+            const bank = document.getElementById('puzzle-word-bank'); const box = document.getElementById('puzzle-answer-box');
+            bank.innerHTML = ""; box.innerHTML = "";
+            puzzleShuffled.forEach((word, index) => { let btn = document.createElement('div'); btn.className = 'word-btn'; btn.innerText = word; btn.onclick = () => { puzzleAnswer.push(puzzleShuffled.splice(index, 1)[0]); renderPuzzle(); }; bank.appendChild(btn); });
+            puzzleAnswer.forEach((word, index) => { let btn = document.createElement('div'); btn.className = 'word-btn'; btn.innerText = word; btn.onclick = () => { puzzleShuffled.push(puzzleAnswer.splice(index, 1)[0]); renderPuzzle(); }; box.appendChild(btn); });
+            if (puzzleAnswer.length === currPuzzleWords.length) {
+                stepAttempts++;
+                if (puzzleAnswer.join(" ") === currPuzzleWords.join(" ")) {
+                    playSound('success'); document.getElementById('puzzle-feedback').innerText = "Great arrangement!"; document.getElementById('puzzle-feedback').style.color = "var(--primary-blue)";
+                    document.getElementById('btn-puzzle-next').classList.remove('hidden'); bank.innerHTML = "";
+                    if(stepAttempts > 1) gameState.stats.totalComebacks++;
+                } else {
+                    playSound('error'); document.getElementById('puzzle-feedback').innerText = "Wrong arrangement. Tap the words above to remove them."; document.getElementById('puzzle-feedback').style.color = "var(--stage3)";
+                    gameState.stats.failsCurrentStage++;
+                }
+            }
+        }
+
+        /* =========================================================
+           9. CORE PROGRESSION & BADGE EVALUATION
+           ========================================================= */
+        function completeCurrentStep() {
+            closeModal('modal-mcq'); closeModal('modal-puzzle'); playSound('unlock');
+            
+            if (currentViewingStep === gameState.maxUnlockedStep) {
+                gameState.stars++;
+                if (challenges[currentViewingStep].isKey) gameState.keys++;
+                gameState.maxUnlockedStep++;
+            }
+
+            evaluateBadges(currentViewingStep);
+            saveGame(); updateDashboard();
+
+            if(badgeQueue.length > 0) showNextBadgeReveal();
+            else finishStepFlow();
+        }
+
+        function finishStepFlow() {
+            if (gameState.maxUnlockedStep >= 15) {
+                setTimeout(() => {
+                    document.getElementById('vic-stars').innerText = gameState.stars;
+                    document.getElementById('vic-badges').innerText = gameState.unlockedBadges.length;
+                    navTo('victory');
+                }, 500);
+            } else navTo('map');
+        }
+
+        function evaluateBadges(justCompletedStep) {
+            const stageIdx = Math.floor(justCompletedStep / 3);
+            const stepType = justCompletedStep % 3;
+
+            awardBadge(masterBadges[justCompletedStep].id); // Checkpoint
+
+            if (stepType === 2) {
+                const stageBadgeId = masterBadges[15 + stageIdx]?.id;
+                if(stageBadgeId) awardBadge(stageBadgeId);
+                if (stageIdx + 1 > gameState.rankIndex) gameState.rankIndex = stageIdx + 1;
+                if (gameState.stats.failsCurrentStage === 0) awardBadge('perfect-run');
+                gameState.stats.failsCurrentStage = 0;
+            }
+
+            if (gameState.stars >= 1) awardBadge('first-star');
+            if (gameState.stars >= 5) awardBadge('star-collector');
+            if (gameState.stars >= 10) awardBadge('super-collector');
+            if (gameState.stars >= 15) awardBadge('all-star');
+            if (gameState.keys >= 5) awardBadge('key-keeper');
+            if (gameState.stats.totalComebacks > 0) awardBadge('comeback-kid');
+            awardBadge('hint-free-hero');
+        }
+
+        function awardBadge(id) {
+            if (!gameState.unlockedBadges.includes(id)) {
+                gameState.unlockedBadges.push(id);
+                gameState.badgeDates[id] = new Date().toLocaleDateString('en-GB');
+                const b = masterBadges.find(x => x.id === id);
+                if (b) badgeQueue.push(b);
+            }
+        }
+
+        /* =========================================================
+           10. BADGE REVEAL QUEUE
+           ========================================================= */
+        function showNextBadgeReveal() {
+            if (badgeQueue.length === 0) { closeModal('modal-badge-reveal'); finishStepFlow(); return; }
+            const b = badgeQueue.shift();
+            document.getElementById('reveal-badge-icon').src = b.icon;
+            document.getElementById('reveal-badge-title').innerText = b.title;
+            document.getElementById('reveal-badge-desc').innerText = b.desc;
+            if (gameConfig.enableSound) setTimeout(() => playSound('unlock'), 200);
+            document.getElementById('modal-badge-reveal').classList.remove('hidden');
+        }
+        function closeBadgeReveal() { document.getElementById('modal-badge-reveal').classList.add('hidden'); setTimeout(() => { showNextBadgeReveal(); }, 300); }
+
+        /* =========================================================
+           11. ACHIEVEMENT GALLERY RENDER
+           ========================================================= */
+        function renderAchievementGallery() {
+            const container = document.getElementById('gallery-container'); container.innerHTML = "";
+            const categories = [ { id: 'checkpoint', title: 'Checkpoint Missions (15)' }, { id: 'stage', title: 'Stage Badges (5)' }, { id: 'bonus', title: 'Bonus Achievements (8)' } ];
+
+            categories.forEach(cat => {
+                let html = `<div class="badge-category"><h3 style="color:var(--primary-blue)">${cat.title}</h3><div class="badge-grid">`;
+                const catBadges = masterBadges.filter(b => b.category === cat.id);
+                catBadges.forEach(b => {
+                    const isUnlocked = gameState.unlockedBadges.includes(b.id);
+                    const dateTxt = isUnlocked ? `Unlocked: ${gameState.badgeDates[b.id]}` : "LOCKED";
+                    html += `
+                        <div class="badge-card ${isUnlocked ? "unlocked" : "locked"}">
+                            ${!isUnlocked ? `<img src="${ASSET_URLS.rewards.locked}" class="badge-lock-icon" alt="Locked">` : `<img src="${ASSET_URLS.rewards.unlocked}" class="badge-lock-icon" alt="Unlocked" style="width:16px;height:16px">`}
+                            <div class="asset-wrapper" style="width: 80px; height: 80px;">
+                                <img src="${b.icon}" data-fallback="🏆" class="asset-3d badge-icon" alt="${b.title}" loading="lazy"><span class="asset-fallback" hidden>🏆</span>
+                            </div>
+                            <h4>${b.title}</h4><p class="badge-desc">${b.desc}</p><span class="badge-date">${dateTxt}</span>
+                        </div>`;
+                });
+                html += `</div></div>`; container.innerHTML += html;
+            });
+            initFallbackImages();
+        }
+
+        /* =========================================================
+           12. UTILITIES & STORAGE
+           ========================================================= */
+        function toggleSound() { gameConfig.enableSound = !gameConfig.enableSound; showAlert(gameConfig.enableSound ? "Sound activated." : "Sound muted."); }
+        function saveGame() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState)); } catch(e) {} }
+        function loadGame() {
+            try {
+                const data = localStorage.getItem(STORAGE_KEY);
+                if (data) {
+                    const parsed = JSON.parse(data);
+                    gameState = { ...gameState, ...parsed };
+                    if(!gameState.stats) gameState.stats = { failsCurrentStage: 0, hintsCurrentStage: 0, totalComebacks: 0 };
+                }
+            } catch(e) {}
+        }
+        function confirmReset() { document.getElementById('modal-confirm').classList.remove('hidden'); }
+        function resetGame() { localStorage.removeItem(STORAGE_KEY); window.location.reload(); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function showAlert(msg) { document.getElementById('alert-message').innerText = msg; document.getElementById('modal-alert').classList.remove('hidden'); }
+
+        let novaTimeout;
+        function showNova(text) {
+            const nova = document.getElementById('nova-guide'); document.getElementById('nova-text').innerText = text;
+            nova.classList.add('show'); clearTimeout(novaTimeout); novaTimeout = setTimeout(() => hideNova(), 6000);
+        }
+        function hideNova() { document.getElementById('nova-guide').classList.remove('show'); }
+
+        /* =========================================================
+           13. DIGITAL CERTIFICATE
+           ========================================================= */
+        function showCertificate() {
+            document.getElementById('cert-student-name').innerText = gameState.name || "Explorer";
+            document.getElementById('cert-rank').innerText = ranks[gameState.rankIndex];
+            document.getElementById('cert-stars').innerText = gameState.stars;
+            document.getElementById('cert-badges').innerText = gameState.unlockedBadges.length;
+            document.getElementById('cert-date').innerText = new Date().toLocaleDateString('en-GB');
+            document.getElementById('certificate-modal').classList.remove('hidden');
+        }
+
+    </script>
+</body>
+</html>
+
+
