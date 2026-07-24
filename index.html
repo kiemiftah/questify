@@ -152,10 +152,14 @@
         
         .embed-container { width: 100%; max-width: 1100px; margin: 0 auto; border-radius: 24px; overflow: hidden; position: relative; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 4px solid var(--primary-blue); }
         .embed-wrapper { display: none; }
-        .embed-wrapper.active { display: block; }
-        .embed-wrapper iframe { width: 100%; min-height: 600px; border: 0; display: block; }
+        .embed-wrapper.active { display: block; width: 100%; height: 100%; -webkit-overflow-scrolling: touch; overflow-y: auto; }
+        .embed-wrapper iframe { width: 100%; height: 75vh; min-height: 600px; border: 0; display: block; }
+        .video-responsive { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; width: 100%; border-radius: 12px; background: #000; }
+        .video-responsive iframe { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; min-height: 100% !important; border: 0; display: block; }
         .embed-placeholder { min-height: 600px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ecf0f1; padding: 20px; text-align: center; }
-        @media (max-width: 600px) { .embed-wrapper iframe, .embed-placeholder { min-height: 520px; } }
+        @media (max-width: 600px) { 
+            .embed-wrapper iframe, .embed-placeholder { height: 85vh; min-height: 500px; } 
+        }
 
         /* =========================================================
            MODALS
@@ -308,37 +312,37 @@
             <!-- ========================================================= -->
             <!-- STAGE 1: THE QUEST BEGINS -->
             <!-- ========================================================= -->
-            <div id="embed-0" class="embed-wrapper"><div class="embed-placeholder"><h3>Interactive Video</h3><p>Paste Lumi/H5P code here (Stage 1 - Learn)</p></div></div>
-            <div id="embed-1" class="embed-wrapper"><div class="embed-placeholder"><h3>Scratch Game</h3><p>Paste Scratch code here (Stage 1 - Play)</p></div></div>
-            <div id="embed-2" class="embed-wrapper"><div class="embed-placeholder"><h3>Assessment Quiz</h3><p>Paste Google Forms code here (Stage 1 - Assess)</p></div></div>
+            <div id="embed-0" class="embed-wrapper"><div class="video-responsive"><iframe src="https://www.youtube.com/embed/cZHaNdPcQeE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
+            <div id="embed-1" class="embed-wrapper"><iframe src="https://www.gamestolearnenglish.com/past-tense-game/" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen></iframe></div>
+            <div id="embed-2" class="embed-wrapper"><iframe src="https://wayground.com/join?gc=28878825&source=liveDashboard" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen></iframe></div>
 
             <!-- ========================================================= -->
             <!-- STAGE 2: EXPLORER TRAIL -->
             <!-- ========================================================= -->
-            <div id="embed-3" class="embed-wrapper"><div class="embed-placeholder"><h3>Interactive Video</h3><p>Paste Lumi/H5P code here (Stage 2 - Learn)</p></div></div>
-            <div id="embed-4" class="embed-wrapper"><div class="embed-placeholder"><h3>Scratch Game</h3><p>Paste Scratch code here (Stage 2 - Play)</p></div></div>
-            <div id="embed-5" class="embed-wrapper"><div class="embed-placeholder"><h3>Assessment Quiz</h3><p>Paste Google Forms code here (Stage 2 - Assess)</p></div></div>
+            <div id="embed-3" class="embed-wrapper"><div class="video-responsive"><iframe src="https://www.youtube.com/embed/cZHaNdPcQeE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
+            <div id="embed-4" class="embed-wrapper"><iframe src="https://www.gamestolearnenglish.com/past-tense-game/" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen></iframe></div>
+            <div id="embed-5" class="embed-wrapper"><iframe src="https://wayground.com/join?gc=28878825&source=liveDashboard" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen></iframe></div>
 
             <!-- ========================================================= -->
             <!-- STAGE 3: CHALLENGE ZONE -->
             <!-- ========================================================= -->
-            <div id="embed-6" class="embed-wrapper"><div class="embed-placeholder"><h3>Interactive Video</h3><p>Paste Lumi/H5P code here (Stage 3 - Learn)</p></div></div>
-            <div id="embed-7" class="embed-wrapper"><div class="embed-placeholder"><h3>Scratch Game</h3><p>Paste Scratch code here (Stage 3 - Play)</p></div></div>
-            <div id="embed-8" class="embed-wrapper"><div class="embed-placeholder"><h3>Assessment Quiz</h3><p>Paste Google Forms code here (Stage 3 - Assess)</p></div></div>
+            <div id="embed-6" class="embed-wrapper"><div class="video-responsive"><iframe src="https://www.youtube.com/embed/cZHaNdPcQeE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
+            <div id="embed-7" class="embed-wrapper"><iframe src="https://www.gamestolearnenglish.com/past-tense-game/" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen></iframe></div>
+            <div id="embed-8" class="embed-wrapper"><iframe src="https://wayground.com/join?gc=28878825&source=liveDashboard" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen></iframe></div>
 
             <!-- ========================================================= -->
             <!-- STAGE 4: HERO MISSION -->
             <!-- ========================================================= -->
-            <div id="embed-9" class="embed-wrapper"><div class="embed-placeholder"><h3>Interactive Video</h3><p>Paste Lumi/H5P code here (Stage 4 - Learn)</p></div></div>
-            <div id="embed-10" class="embed-wrapper"><div class="embed-placeholder"><h3>Scratch Game</h3><p>Paste Scratch code here (Stage 4 - Play)</p></div></div>
-            <div id="embed-11" class="embed-wrapper"><div class="embed-placeholder"><h3>Assessment Quiz</h3><p>Paste Google Forms code here (Stage 4 - Assess)</p></div></div>
+            <div id="embed-9" class="embed-wrapper"><div class="video-responsive"><iframe src="https://www.youtube.com/embed/cZHaNdPcQeE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
+            <div id="embed-10" class="embed-wrapper"><iframe src="https://www.gamestolearnenglish.com/past-tense-game/" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen></iframe></div>
+            <div id="embed-11" class="embed-wrapper"><iframe src="https://wayground.com/join?gc=28878825&source=liveDashboard" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen></iframe></div>
 
             <!-- ========================================================= -->
             <!-- STAGE 5: LEGEND QUEST -->
             <!-- ========================================================= -->
-            <div id="embed-12" class="embed-wrapper"><div class="embed-placeholder"><h3>Interactive Video</h3><p>Paste Lumi/H5P code here (Stage 5 - Learn)</p></div></div>
-            <div id="embed-13" class="embed-wrapper"><div class="embed-placeholder"><h3>Scratch Game</h3><p>Paste Scratch code here (Stage 5 - Play)</p></div></div>
-            <div id="embed-14" class="embed-wrapper"><div class="embed-placeholder"><h3>Assessment Quiz</h3><p>Paste Google Forms code here (Stage 5 - Assess)</p></div></div>
+            <div id="embed-12" class="embed-wrapper"><div class="video-responsive"><iframe src="https://www.youtube.com/embed/cZHaNdPcQeE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
+            <div id="embed-13" class="embed-wrapper"><iframe src="https://www.gamestolearnenglish.com/past-tense-game/" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen></iframe></div>
+            <div id="embed-14" class="embed-wrapper"><iframe src="https://wayground.com/join?gc=28878825&source=liveDashboard" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen></iframe></div>
         </div>
 
         <div class="completion-area">
@@ -977,5 +981,3 @@
     </script>
 </body>
 </html>
-
-
