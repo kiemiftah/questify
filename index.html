@@ -544,25 +544,54 @@
         let activityDatabaseStatus = "Loading database...";
         const DEFAULT_ACTIVITY_URLS = [
             { stage: 1, type: "Learn",  focus: "Basic +s Rule", url: "https://www.youtube.com/watch?v=Md0Aelum1mc" },
-            { stage: 1, type: "Play",   focus: "Third-person +s practice", url: "https://wordwall.net/resource/93920645/business-result-starter-u5-present-simple-s-rule-1" },
-            { stage: 1, type: "Assess", focus: "Third-person singular quiz", url: "https://wordwall.net/resource/93509575/present-simple-third-person-singular" },
+            { stage: 1, type: "Play",   focus: "Present Simple: third-person +s practice", url: "https://www.gamestolearnenglish.com/present-simple/?iframe=true" },
+            { stage: 1, type: "Assess", focus: "Third-person singular listening and matching", url: "https://learningapps.org/view13441296?allowFullscreen=1" },
 
             { stage: 2, type: "Learn",  focus: "+es Rule", url: "https://www.youtube.com/watch?v=6TnYHdJ4dXs" },
-            { stage: 2, type: "Play",   focus: "+s / +es sorting", url: "https://wordwall.net/resource/63685316/esl/present-simple-s-es-ending" },
-            { stage: 2, type: "Assess", focus: "+s / +es quiz", url: "https://wordwall.net/resource/91250927/%D0%B0%D0%BD%D0%B3%D0%BB%D1%96%D0%B9%D1%81%D1%8C%D0%BA%D0%B0/present-simple-s-es" },
+            { stage: 2, type: "Play",   focus: "Grammar Bubbles: +s / +es in sentences", url: "https://www.gamestolearnenglish.com/grammar-bubbles/?iframe=true" },
+            { stage: 2, type: "Assess", focus: "Third-person present simple listening challenge", url: "https://learningapps.org/view13441454?allowFullscreen=1" },
 
-            { stage: 3, type: "Learn",  focus: "I/You/We/They vs He/She/It", url: "https://www.youtube.com/watch?v=JU1Pi5X-x8E" },
-            { stage: 3, type: "Play",   focus: "Subject-verb agreement practice", url: "https://wordwall.net/resource/92088892/present-simple-s-es" },
-            { stage: 3, type: "Assess", focus: "Subject-verb agreement quiz", url: "https://wordwall.net/resource/103120313/present-simple-i-you-we-they-he-she-it" },
+            { stage: 3, type: "Learn",  focus: "I/You/We/They vs He/She/It", url: "https://www.youtube.com/watch?v=ITF_rMZQm3s" },
+            { stage: 3, type: "Play",   focus: "Fast Phrases: subject-verb agreement", url: "https://www.gamestolearnenglish.com/fast-phrases/?iframe=true#sl/likes/" },
+            { stage: 3, type: "Assess", focus: "Present Simple previous-knowledge test", url: "https://learningapps.org/display?v=p8wbdwzpc20" },
 
-            { stage: 4, type: "Learn",  focus: "+ies Rule", url: "https://www.youtube.com/watch?v=IHCspFf6HU0" },
-            { stage: 4, type: "Play",   focus: "Third-person spelling rules", url: "https://wordwall.net/resource/72079749/spelling-rules-third-person-singular-present-simple" },
-            { stage: 4, type: "Assess", focus: "+s / +es / +ies spelling quiz", url: "https://wordwall.net/resource/67582482/present-simple-the-third-person-singular" },
+            { stage: 4, type: "Learn",  focus: "+ies Rule: consonant + y", url: "https://www.youtube.com/watch?v=NqKfavHCxqQ&t=182s" },
+            { stage: 4, type: "Play",   focus: "Months Game: study → studies in context", url: "https://www.gamestolearnenglish.com/months-game/?iframe=true" },
+            { stage: 4, type: "Assess", focus: "Present Simple -s / -es / -ies spelling check", url: "https://learningapps.org/view32458854?allowFullscreen=1" },
 
-            { stage: 5, type: "Learn",  focus: "Mastery Review: +s, +es, +ies", url: "https://www.youtube.com/watch?v=LvHGj9NMG6Y" },
-            { stage: 5, type: "Play",   focus: "Mixed +s / +es / +ies game", url: "https://wordwall.net/resource/95577579/present-simple-sesies-open-the-box" },
-            { stage: 5, type: "Assess", focus: "Final +s / +es / +ies quiz", url: "https://wordwall.net/resource/17922600/present-simple-s-es-ies" }
+            { stage: 5, type: "Learn",  focus: "Mastery Review: +s, +es, +ies", url: "https://www.youtube.com/watch?v=m0kTGL6Flzg" },
+            { stage: 5, type: "Play",   focus: "Weather Game: mixed third-person present simple review", url: "https://www.gamestolearnenglish.com/weather/?iframe=true" },
+            { stage: 5, type: "Assess", focus: "Final Present Simple summary test", url: "https://learningapps.org/display?v=peaq9k7dj20" }
         ];
+
+        // Known URLs from the previous build. If these are still in cache/GSheet,
+        // migrate them to the new verified defaults without overwriting custom admin URLs.
+        const LEGACY_ACTIVITY_URLS = [
+            "https://www.youtube.com/watch?v=Md0Aelum1mc",
+            "https://www.gamestolearnenglish.com/present-simple/?iframe=true",
+            "https://wordwall.net/resource/93509575/present-simple-third-person-singular",
+            "https://www.youtube.com/watch?v=6TnYHdJ4dXs",
+            "https://www.gamestolearnenglish.com/grammar-bubbles/?iframe=true",
+            "https://wordwall.net/resource/91250927/%D0%B0%D0%BD%D0%B3%D0%BB%D1%96%D0%B9%D1%81%D1%8C%D0%BA%D0%B0/present-simple-s-es",
+            "https://www.youtube.com/watch?v=JU1Pi5X-x8E",
+            "https://www.gamestolearnenglish.com/fast-phrases/?iframe=true#sl/likes/",
+            "https://wordwall.net/resource/103120313/present-simple-i-you-we-they-he-she-it",
+            "https://www.youtube.com/watch?v=IHCspFf6HU0",
+            "https://www.gamestolearnenglish.com/months-game/?iframe=true",
+            "https://wordwall.net/resource/67582482/present-simple-the-third-person-singular",
+            "https://www.youtube.com/watch?v=LvHGj9NMG6Y",
+            "https://www.gamestolearnenglish.com/weather/?iframe=true",
+            "https://wordwall.net/resource/17922600/present-simple-s-es-ies"
+        ];
+
+        function migrateLegacyActivityUrl(index, rawUrl) {
+            const value = String(rawUrl ?? '').trim();
+            const legacy = String(LEGACY_ACTIVITY_URLS[index] ?? '').trim();
+            if (value && legacy && value === legacy && DEFAULT_ACTIVITY_URLS[index].url !== legacy) {
+                return DEFAULT_ACTIVITY_URLS[index].url;
+            }
+            return value;
+        }
         let activityUrls = DEFAULT_ACTIVITY_URLS.map(item => ({ ...item }));
 
         /* =========================================================
@@ -837,7 +866,7 @@
             try {
                 const saved = JSON.parse(localStorage.getItem(ACTIVITY_URLS_KEY) || "null");
                 if (Array.isArray(saved) && saved.length === DEFAULT_ACTIVITY_URLS.length) {
-                    activityUrls = DEFAULT_ACTIVITY_URLS.map((item, index) => ({ ...item, url: String(saved[index] ?? item.url).trim() }));
+                    activityUrls = DEFAULT_ACTIVITY_URLS.map((item, index) => ({ ...item, url: migrateLegacyActivityUrl(index, saved[index] ?? item.url) }));
                     setDatabaseStatus('Using cached URLs while connecting to Google Sheet.');
                 }
             } catch(e) {}
@@ -850,6 +879,17 @@
                 .finally(() => clearTimeout(timer));
         }
 
+        function isGamesToLearnEnglishUrl(rawUrl) {
+            const value = String(rawUrl || '').trim();
+            if (!value) return false;
+            try {
+                const host = new URL(value).hostname.replace(/^www\./, '').toLowerCase();
+                return host === 'gamestolearnenglish.com';
+            } catch(e) {
+                return false;
+            }
+        }
+
         function mergeDatabaseActivities(rows) {
             if (!Array.isArray(rows)) return false;
             let changed = false;
@@ -859,8 +899,15 @@
                     String(row.type || '').trim().toLowerCase() === String(base.type).toLowerCase()
                 );
                 if (!found) return;
-                const incomingUrl = String(found.url ?? '').trim();
+                let incomingUrl = migrateLegacyActivityUrl(index, found.url ?? '');
                 const incomingTitle = String(found.title || '').trim();
+
+                // PLAY activities are intentionally restricted to GamesToLearnEnglish.
+                // This also migrates older Wordwall PLAY URLs to the new stage-specific defaults.
+                if (String(base.type).toLowerCase() === 'play' && incomingUrl && !isGamesToLearnEnglishUrl(incomingUrl)) {
+                    incomingUrl = base.url;
+                }
+
                 activityUrls[index] = {
                     ...activityUrls[index],
                     focus: incomingTitle || activityUrls[index].focus,
@@ -908,17 +955,31 @@
                 const host = url.hostname.replace(/^www\./, "").toLowerCase();
 
                 // YouTube: watch, short, live, youtu.be and existing embed URLs.
+                // Use privacy-enhanced youtube-nocookie.com and preserve optional start time.
+                const youtubeStartSeconds = () => {
+                    const raw = url.searchParams.get('start') || url.searchParams.get('t') || '';
+                    if (!raw) return 0;
+                    if (/^\d+$/.test(raw)) return Number(raw);
+                    const match = raw.match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/i);
+                    if (!match) return 0;
+                    return (Number(match[1] || 0) * 3600) + (Number(match[2] || 0) * 60) + Number(match[3] || 0);
+                };
+                const makeYouTubeEmbed = (id) => {
+                    if (!id) return url.href;
+                    const start = youtubeStartSeconds();
+                    return `https://www.youtube-nocookie.com/embed/${id}${start ? `?start=${start}` : ''}`;
+                };
                 if (host === "youtu.be") {
                     const id = url.pathname.split('/').filter(Boolean)[0];
-                    return id ? `https://www.youtube.com/embed/${id}` : url.href;
+                    return makeYouTubeEmbed(id);
                 }
-                if (host === "youtube.com" || host === "m.youtube.com") {
+                if (host === "youtube.com" || host === "m.youtube.com" || host === "youtube-nocookie.com") {
                     let id = "";
                     if (url.pathname === "/watch") id = url.searchParams.get("v") || "";
                     else if (url.pathname.startsWith("/shorts/")) id = url.pathname.split('/')[2] || "";
                     else if (url.pathname.startsWith("/live/")) id = url.pathname.split('/')[2] || "";
                     else if (url.pathname.startsWith("/embed/")) id = url.pathname.split('/')[2] || "";
-                    if (id) return `https://www.youtube.com/embed/${id}`;
+                    if (id) return makeYouTubeEmbed(id);
                 }
 
                 // Vimeo: convert standard video URLs to player embeds.
@@ -934,6 +995,24 @@
                     if (match && match[1]) return `https://drive.google.com/file/d/${match[1]}/preview`;
                 }
 
+                // LearningApps officially supports iframe embedding. Convert display links
+                // to its watch player and suppress analytics inside embedded activities.
+                if (host === "learningapps.org") {
+                    if (url.pathname === "/display" && url.searchParams.get('v')) {
+                        const v = url.searchParams.get('v');
+                        return `https://learningapps.org/watch.php?allowFullscreen=1&disableanalytics=1&v=${encodeURIComponent(v)}`;
+                    }
+                    url.searchParams.set('allowFullscreen', '1');
+                    url.searchParams.set('disableanalytics', '1');
+                    return url.href;
+                }
+
+                // Games to Learn English: automatically request its iframe-friendly display.
+                if (host === "gamestolearnenglish.com") {
+                    url.searchParams.set('iframe', 'true');
+                    return url.href;
+                }
+
                 return url.href;
             } catch(e) { return ""; }
         }
@@ -941,7 +1020,7 @@
         function isResponsiveVideoUrl(rawUrl) {
             try {
                 const host = new URL(String(rawUrl || "").trim()).hostname.replace(/^www\./, "").toLowerCase();
-                return host === "youtube.com" || host === "m.youtube.com" || host === "youtu.be" || host === "vimeo.com" || host === "player.vimeo.com";
+                return host === "youtube.com" || host === "m.youtube.com" || host === "youtu.be" || host === "youtube-nocookie.com" || host === "vimeo.com" || host === "player.vimeo.com";
             } catch(e) { return false; }
         }
 
@@ -963,6 +1042,8 @@
                 iframe.src = embedUrl;
                 iframe.title = `Stage ${item.stage} ${item.type}: ${item.focus}`;
                 iframe.setAttribute('allowfullscreen', '');
+                iframe.setAttribute('allow', 'fullscreen *; autoplay; clipboard-write; encrypted-media; picture-in-picture');
+                iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
                 iframe.setAttribute('loading', 'lazy');
                 iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
                 iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
@@ -1081,6 +1162,11 @@
                 const value = input ? input.value.trim() : activityUrls[i].url;
                 if (value && !normalizeEmbedUrl(value)) {
                     showAlert(`Please enter a valid HTTP/HTTPS URL for Stage ${DEFAULT_ACTIVITY_URLS[i].stage} ${DEFAULT_ACTIVITY_URLS[i].type}, or leave it empty.`);
+                    if (input) input.focus();
+                    return null;
+                }
+                if (value && String(DEFAULT_ACTIVITY_URLS[i].type).toLowerCase() === 'play' && !isGamesToLearnEnglishUrl(value)) {
+                    showAlert(`PLAY must use a URL from gamestolearnenglish.com. Stage ${DEFAULT_ACTIVITY_URLS[i].stage} PLAY was not saved.`);
                     if (input) input.focus();
                     return null;
                 }
