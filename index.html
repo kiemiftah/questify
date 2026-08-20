@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="referrer" content="strict-origin-when-cross-origin">
     <title>QUESTIFY - Learn. Play. Assess.</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     
@@ -163,6 +162,27 @@
         }
 
         /* =========================================================
+           ADMIN URL MANAGER
+           ========================================================= */
+        .admin-panel { width: 100%; max-width: 1100px; background: var(--white); border-radius: 24px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        .admin-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; margin-bottom: 24px; }
+        .admin-header p { color: #7f8c8d; margin-top: 6px; max-width: 760px; line-height: 1.5; }
+        .admin-stage { border: 2px solid #ecf0f1; border-radius: 18px; padding: 18px; margin-bottom: 16px; }
+        .admin-stage h3 { margin-bottom: 14px; font-size: 1.15rem; }
+        .admin-url-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .admin-url-field label { display: block; font-weight: 900; margin-bottom: 6px; }
+        .admin-url-field input { width: 100%; min-height: 48px; border: 2px solid var(--gray); border-radius: 10px; padding: 11px 12px; font-size: 0.95rem; outline: none; }
+        .admin-url-field input:focus { border-color: var(--primary-blue); }
+        .admin-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+        .admin-note { margin-top: 16px; padding: 12px 14px; border-radius: 12px; background: #f7f9fa; color: var(--dark-blue); line-height: 1.45; font-size: 0.9rem; }
+        .activity-frame-shell { width: 100%; min-height: 600px; height: 75vh; background: #fff; }
+        .activity-frame-shell iframe { width: 100%; height: 100%; min-height: 100%; border: 0; display: block; background: #fff; }
+        .activity-fallback { padding: 10px 14px; text-align: center; background: #f7f9fa; border-top: 1px solid #ecf0f1; font-size: 0.85rem; color: #667; }
+        .activity-fallback a { color: var(--primary-blue); font-weight: 900; text-decoration: none; }
+        .activity-empty { min-height: 420px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 30px; color: #7f8c8d; }
+        @media (max-width: 600px) { .admin-panel { padding: 18px; border-radius: 18px; } .activity-frame-shell { min-height: 520px; height: 78vh; } }
+
+        /* =========================================================
            MODALS
            ========================================================= */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(44, 62, 80, 0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; overflow-y: auto; }
@@ -300,6 +320,28 @@
     </section>
 
     <!-- =========================================================
+         ADMIN: URL MANAGER
+         ========================================================= -->
+    <section id="admin-screen" class="screen screen-scroll hidden">
+        <div class="admin-panel">
+            <div class="admin-header">
+                <div>
+                    <h2 style="color: var(--primary-blue);">Questify URL Manager</h2>
+                    <p>Paste the URL for each activity. Questify will automatically use a responsive video embed when suitable, otherwise a responsive iframe.</p>
+                </div>
+                <button class="btn btn-outline" style="margin:0;" onclick="window.location.href=window.location.pathname">BACK TO QUESTIFY</button>
+            </div>
+            <div id="admin-url-container"></div>
+            <div class="admin-actions">
+                <button class="btn btn-green" id="btn-save-admin-urls" onclick="saveAdminUrls()">SAVE URLS</button>
+                <button class="btn btn-outline" id="btn-clear-admin-urls" onclick="clearAdminUrls()">CLEAR ALL URLS</button>
+                <button class="btn btn-outline" id="btn-reset-admin-urls" onclick="resetAdminUrls()">RESET DEFAULTS</button>
+            </div>
+            <div class="admin-note"><strong>Database:</strong> <span id="admin-db-status">Connecting to Google Sheet...</span><br>Leave any field empty to remove that activity. Changes are shared through Google Sheet.</div>
+        </div>
+    </section>
+
+    <!-- =========================================================
          SCREEN 5: VIEWER SCREEN
          ========================================================= -->
     <section id="viewer-screen" class="screen screen-scroll hidden">
@@ -310,40 +352,22 @@
         </div>
 
         <div class="embed-container">
-            <!-- ========================================================= -->
-            <!-- STAGE 1: THE QUEST BEGINS -->
-            <!-- ========================================================= -->
-            <div id="embed-0" class="embed-wrapper"><div class="video-responsive"><iframe src="https://www.youtube.com/embed/cZHaNdPcQeE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div></div>
-            <div id="embed-1" class="embed-wrapper"><iframe src="https://www.gamestolearnenglish.com/past-tense-game/" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen></iframe></div>
-            <div id="embed-2" class="embed-wrapper"><iframe src="https://wayground.com/join?gc=28878825&source=liveDashboard" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen></iframe></div>
-
-            <!-- ========================================================= -->
-            <!-- STAGE 2: EXPLORER TRAIL -->
-            <!-- ========================================================= -->
-            <div id="embed-3" class="embed-wrapper"><div class="video-responsive"><iframe src="https://www.youtube.com/embed/cZHaNdPcQeE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div></div>
-            <div id="embed-4" class="embed-wrapper"><iframe src="https://www.gamestolearnenglish.com/past-tense-game/" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen></iframe></div>
-            <div id="embed-5" class="embed-wrapper"><iframe src="https://wayground.com/join?gc=28878825&source=liveDashboard" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen></iframe></div>
-
-            <!-- ========================================================= -->
-            <!-- STAGE 3: CHALLENGE ZONE -->
-            <!-- ========================================================= -->
-            <div id="embed-6" class="embed-wrapper"><div class="video-responsive"><iframe src="https://www.youtube.com/embed/cZHaNdPcQeE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div></div>
-            <div id="embed-7" class="embed-wrapper"><iframe src="https://www.gamestolearnenglish.com/past-tense-game/" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen></iframe></div>
-            <div id="embed-8" class="embed-wrapper"><iframe src="https://wayground.com/join?gc=28878825&source=liveDashboard" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen></iframe></div>
-
-            <!-- ========================================================= -->
-            <!-- STAGE 4: HERO MISSION -->
-            <!-- ========================================================= -->
-            <div id="embed-9" class="embed-wrapper"><div class="video-responsive"><iframe src="https://www.youtube.com/embed/cZHaNdPcQeE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div></div>
-            <div id="embed-10" class="embed-wrapper"><iframe src="https://www.gamestolearnenglish.com/past-tense-game/" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen></iframe></div>
-            <div id="embed-11" class="embed-wrapper"><iframe src="https://wayground.com/join?gc=28878825&source=liveDashboard" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen></iframe></div>
-
-            <!-- ========================================================= -->
-            <!-- STAGE 5: LEGEND QUEST -->
-            <!-- ========================================================= -->
-            <div id="embed-12" class="embed-wrapper"><div class="video-responsive"><iframe src="https://www.youtube.com/embed/cZHaNdPcQeE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div></div>
-            <div id="embed-13" class="embed-wrapper"><iframe src="https://www.gamestolearnenglish.com/past-tense-game/" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen></iframe></div>
-            <div id="embed-14" class="embed-wrapper"><iframe src="https://wayground.com/join?gc=28878825&source=liveDashboard" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen></iframe></div>
+            <!-- Activity embeds are generated from the Admin URL Manager. -->
+            <div id="embed-0" class="embed-wrapper"></div>
+            <div id="embed-1" class="embed-wrapper"></div>
+            <div id="embed-2" class="embed-wrapper"></div>
+            <div id="embed-3" class="embed-wrapper"></div>
+            <div id="embed-4" class="embed-wrapper"></div>
+            <div id="embed-5" class="embed-wrapper"></div>
+            <div id="embed-6" class="embed-wrapper"></div>
+            <div id="embed-7" class="embed-wrapper"></div>
+            <div id="embed-8" class="embed-wrapper"></div>
+            <div id="embed-9" class="embed-wrapper"></div>
+            <div id="embed-10" class="embed-wrapper"></div>
+            <div id="embed-11" class="embed-wrapper"></div>
+            <div id="embed-12" class="embed-wrapper"></div>
+            <div id="embed-13" class="embed-wrapper"></div>
+            <div id="embed-14" class="embed-wrapper"></div>
         </div>
 
         <div class="completion-area">
@@ -512,6 +536,35 @@
         const stageColors = ['var(--stage1)', 'var(--stage2)', 'var(--stage3)', 'var(--stage4)', 'var(--stage5)'];
         const stageNames = ["The Quest Begins", "Explorer Trail", "Challenge Zone", "Hero Mission", "Legend Quest"];
 
+        // Default activities: 5 stages x Learn, Play, Assess.
+        // Admin can replace URLs without changing any game logic.
+        const ACTIVITY_URLS_KEY = "questifyActivityUrls_V1";
+        const QUESTIFY_API_URL = "https://script.google.com/macros/s/AKfycbwTM0TBIxfF1-axLq6YJioAKu6Kh-2-3c3WDOaV8yaypD4Jqg2xAVojblBvGx8xNbCO/exec";
+        const API_TIMEOUT_MS = 8000;
+        let activityDatabaseStatus = "Loading database...";
+        const DEFAULT_ACTIVITY_URLS = [
+            { stage: 1, type: "Learn",  focus: "Basic +s Rule", url: "https://www.youtube.com/watch?v=Md0Aelum1mc" },
+            { stage: 1, type: "Play",   focus: "Third-person +s practice", url: "https://wordwall.net/resource/93920645/business-result-starter-u5-present-simple-s-rule-1" },
+            { stage: 1, type: "Assess", focus: "Third-person singular quiz", url: "https://wordwall.net/resource/93509575/present-simple-third-person-singular" },
+
+            { stage: 2, type: "Learn",  focus: "+es Rule", url: "https://www.youtube.com/watch?v=6TnYHdJ4dXs" },
+            { stage: 2, type: "Play",   focus: "+s / +es sorting", url: "https://wordwall.net/resource/63685316/esl/present-simple-s-es-ending" },
+            { stage: 2, type: "Assess", focus: "+s / +es quiz", url: "https://wordwall.net/resource/91250927/%D0%B0%D0%BD%D0%B3%D0%BB%D1%96%D0%B9%D1%81%D1%8C%D0%BA%D0%B0/present-simple-s-es" },
+
+            { stage: 3, type: "Learn",  focus: "I/You/We/They vs He/She/It", url: "https://www.youtube.com/watch?v=JU1Pi5X-x8E" },
+            { stage: 3, type: "Play",   focus: "Subject-verb agreement practice", url: "https://wordwall.net/resource/92088892/present-simple-s-es" },
+            { stage: 3, type: "Assess", focus: "Subject-verb agreement quiz", url: "https://wordwall.net/resource/103120313/present-simple-i-you-we-they-he-she-it" },
+
+            { stage: 4, type: "Learn",  focus: "+ies Rule", url: "https://www.youtube.com/watch?v=IHCspFf6HU0" },
+            { stage: 4, type: "Play",   focus: "Third-person spelling rules", url: "https://wordwall.net/resource/72079749/spelling-rules-third-person-singular-present-simple" },
+            { stage: 4, type: "Assess", focus: "+s / +es / +ies spelling quiz", url: "https://wordwall.net/resource/67582482/present-simple-the-third-person-singular" },
+
+            { stage: 5, type: "Learn",  focus: "Mastery Review: +s, +es, +ies", url: "https://www.youtube.com/watch?v=LvHGj9NMG6Y" },
+            { stage: 5, type: "Play",   focus: "Mixed +s / +es / +ies game", url: "https://wordwall.net/resource/95577579/present-simple-sesies-open-the-box" },
+            { stage: 5, type: "Assess", focus: "Final +s / +es / +ies quiz", url: "https://wordwall.net/resource/17922600/present-simple-s-es-ies" }
+        ];
+        let activityUrls = DEFAULT_ACTIVITY_URLS.map(item => ({ ...item }));
+
         /* =========================================================
            2. TIPS DATA (TRANSLATED)
            ========================================================= */
@@ -628,14 +681,25 @@
            ========================================================= */
         window.onload = () => {
             initFallbackImages(); injectStaticImages();
+            loadActivityUrls();
+            renderActivityEmbeds();
+            renderAdminSettings();
+            refreshActivityUrlsFromDatabase();
             
             setTimeout(() => {
                 loadGame(); renderMap(); renderAchievementGallery();
-                if (gameState.name === "") {
-                    navTo('start');
-                    document.getElementById('start-screen').classList.add('screen-center');
+                const adminRequested = new URLSearchParams(window.location.search).get('admin') === '1';
+                if (adminRequested) { navTo('admin'); renderAdminSettings(); return; }
+
+                // Always show the player-name page for normal visits.
+                // Existing progress is kept in storage and can be resumed by entering the same name.
+                navTo('start');
+                document.getElementById('start-screen').classList.add('screen-center');
+                const nameInput = document.getElementById('player-name');
+                if (nameInput) {
+                    nameInput.value = '';
+                    nameInput.focus();
                 }
-                else { navTo('map'); updateDashboard(); }
             }, 1000);
         };
 
@@ -712,22 +776,408 @@
         /* =========================================================
            6. MAIN NAVIGATION
            ========================================================= */
-        const screens = ['loading-screen', 'start-screen', 'map-screen', 'viewer-screen', 'achievements-screen', 'victory-screen'];
+        const screens = ['loading-screen', 'start-screen', 'map-screen', 'viewer-screen', 'achievements-screen', 'admin-screen', 'victory-screen'];
         function navTo(screenId) {
             screens.forEach(s => document.getElementById(s).classList.add('hidden'));
             document.getElementById(screenId + '-screen').classList.remove('hidden');
             
-            if(screenId === 'start' || screenId === 'loading') { document.getElementById('top-nav').classList.add('hidden'); hideNova(); }
+            if(screenId === 'start' || screenId === 'loading' || screenId === 'admin') { document.getElementById('top-nav').classList.add('hidden'); hideNova(); }
             else { document.getElementById('top-nav').classList.remove('hidden'); }
             
             if(screenId === 'map') showNova("Choose your next task, " + gameState.name + "!");
             if(screenId === 'achievements') showNova("Here is your badge collection.");
+            if(screenId === 'admin') { hideNova(); renderAdminSettings(); }
         }
 
         function startGame() {
             const nameInput = document.getElementById('player-name').value.trim();
             if (nameInput === "") { showAlert("Please enter your name!"); return; }
-            gameState.name = nameInput; saveGame(); navTo('map'); updateDashboard();
+
+            const previousName = String(gameState.name || '').trim();
+            const isDifferentPlayer = previousName && previousName.toLowerCase() !== nameInput.toLowerCase();
+
+            // A different player starts a fresh quest so progress is not shared accidentally.
+            if (isDifferentPlayer) {
+                gameState = {
+                    name: nameInput, maxUnlockedStep: 0, stars: 0, keys: 0, rankIndex: 0,
+                    unlockedBadges: [], badgeDates: {},
+                    stats: { failsCurrentStage: 0, hintsCurrentStage: 0, totalComebacks: 0 }
+                };
+            } else {
+                gameState.name = nameInput;
+            }
+
+            saveGame();
+            navTo('map');
+            updateDashboard();
+        }
+
+        /* =========================================================
+           ACTIVITY URL MANAGER
+           ========================================================= */
+        function setDatabaseStatus(message, isError = false) {
+            activityDatabaseStatus = message;
+            const el = document.getElementById('admin-db-status');
+            if (el) {
+                el.textContent = message;
+                el.style.color = isError ? 'var(--stage3)' : 'var(--dark-blue)';
+                el.style.fontWeight = '900';
+            }
+        }
+
+        function cacheActivityUrls() {
+            try {
+                const urlsOnly = activityUrls.map(item => item.url);
+                localStorage.setItem(ACTIVITY_URLS_KEY, JSON.stringify(urlsOnly));
+            } catch(e) {}
+        }
+
+        function loadActivityUrls() {
+            activityUrls = DEFAULT_ACTIVITY_URLS.map(item => ({ ...item }));
+            try {
+                const saved = JSON.parse(localStorage.getItem(ACTIVITY_URLS_KEY) || "null");
+                if (Array.isArray(saved) && saved.length === DEFAULT_ACTIVITY_URLS.length) {
+                    activityUrls = DEFAULT_ACTIVITY_URLS.map((item, index) => ({ ...item, url: String(saved[index] ?? item.url).trim() }));
+                    setDatabaseStatus('Using cached URLs while connecting to Google Sheet.');
+                }
+            } catch(e) {}
+        }
+
+        function fetchWithTimeout(url, options = {}, timeout = API_TIMEOUT_MS) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), timeout);
+            return fetch(url, { ...options, signal: controller.signal })
+                .finally(() => clearTimeout(timer));
+        }
+
+        function mergeDatabaseActivities(rows) {
+            if (!Array.isArray(rows)) return false;
+            let changed = false;
+            DEFAULT_ACTIVITY_URLS.forEach((base, index) => {
+                const found = rows.find(row =>
+                    Number(row.stage) === Number(base.stage) &&
+                    String(row.type || '').trim().toLowerCase() === String(base.type).toLowerCase()
+                );
+                if (!found) return;
+                const incomingUrl = String(found.url ?? '').trim();
+                const incomingTitle = String(found.title || '').trim();
+                activityUrls[index] = {
+                    ...activityUrls[index],
+                    focus: incomingTitle || activityUrls[index].focus,
+                    url: incomingUrl
+                };
+                changed = true;
+            });
+            return changed;
+        }
+
+        async function refreshActivityUrlsFromDatabase(showMessage = false) {
+            setDatabaseStatus('Connecting to Google Sheet...');
+            try {
+                const separator = QUESTIFY_API_URL.includes('?') ? '&' : '?';
+                const response = await fetchWithTimeout(`${QUESTIFY_API_URL}${separator}_=${Date.now()}`, {
+                    method: 'GET',
+                    cache: 'no-store',
+                    redirect: 'follow'
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const json = await response.json();
+                if (!json || json.success !== true || !Array.isArray(json.data)) {
+                    throw new Error((json && json.message) || 'Invalid database response');
+                }
+                mergeDatabaseActivities(json.data);
+                cacheActivityUrls();
+                renderActivityEmbeds();
+                renderAdminSettings();
+                setDatabaseStatus('Connected. URLs loaded from Google Sheet.');
+                if (showMessage) showAlert('Latest activity URLs loaded from Google Sheet.');
+                return true;
+            } catch(error) {
+                setDatabaseStatus('Google Sheet unavailable. Using cached/default URLs.', true);
+                if (showMessage) showAlert('Could not reach Google Sheet. Questify is using the last cached or default URLs.');
+                return false;
+            }
+        }
+
+        function normalizeEmbedUrl(rawUrl) {
+            const value = String(rawUrl || "").trim();
+            if (!value) return "";
+            try {
+                const url = new URL(value);
+                if (!/^https?:$/.test(url.protocol)) return "";
+                const host = url.hostname.replace(/^www\./, "").toLowerCase();
+
+                // YouTube: watch, short, live, youtu.be and existing embed URLs.
+                if (host === "youtu.be") {
+                    const id = url.pathname.split('/').filter(Boolean)[0];
+                    return id ? `https://www.youtube.com/embed/${id}` : url.href;
+                }
+                if (host === "youtube.com" || host === "m.youtube.com") {
+                    let id = "";
+                    if (url.pathname === "/watch") id = url.searchParams.get("v") || "";
+                    else if (url.pathname.startsWith("/shorts/")) id = url.pathname.split('/')[2] || "";
+                    else if (url.pathname.startsWith("/live/")) id = url.pathname.split('/')[2] || "";
+                    else if (url.pathname.startsWith("/embed/")) id = url.pathname.split('/')[2] || "";
+                    if (id) return `https://www.youtube.com/embed/${id}`;
+                }
+
+                // Vimeo: convert standard video URLs to player embeds.
+                if (host === "vimeo.com" || host === "player.vimeo.com") {
+                    const parts = url.pathname.split('/').filter(Boolean);
+                    const id = [...parts].reverse().find(part => /^\d+$/.test(part));
+                    if (id) return `https://player.vimeo.com/video/${id}`;
+                }
+
+                // Google Drive files: use preview mode when a file id is available.
+                if (host === "drive.google.com") {
+                    const match = url.pathname.match(/\/file\/d\/([^/]+)/);
+                    if (match && match[1]) return `https://drive.google.com/file/d/${match[1]}/preview`;
+                }
+
+                return url.href;
+            } catch(e) { return ""; }
+        }
+
+        function isResponsiveVideoUrl(rawUrl) {
+            try {
+                const host = new URL(String(rawUrl || "").trim()).hostname.replace(/^www\./, "").toLowerCase();
+                return host === "youtube.com" || host === "m.youtube.com" || host === "youtu.be" || host === "vimeo.com" || host === "player.vimeo.com";
+            } catch(e) { return false; }
+        }
+
+        function renderActivityEmbeds() {
+            activityUrls.forEach((item, index) => {
+                const container = document.getElementById(`embed-${index}`);
+                if (!container) return;
+                container.innerHTML = "";
+                const embedUrl = normalizeEmbedUrl(item.url);
+                if (!embedUrl) {
+                    const empty = document.createElement('div');
+                    empty.className = 'activity-empty';
+                    empty.innerHTML = `<div><h3>Activity URL not set</h3><p>This Stage ${item.stage} ${item.type} activity has not been configured.</p></div>`;
+                    container.appendChild(empty);
+                    return;
+                }
+
+                const iframe = document.createElement('iframe');
+                iframe.src = embedUrl;
+                iframe.title = `Stage ${item.stage} ${item.type}: ${item.focus}`;
+                iframe.setAttribute('allowfullscreen', '');
+                iframe.setAttribute('loading', 'lazy');
+                iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+                iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+
+                if (isResponsiveVideoUrl(item.url)) {
+                    const responsive = document.createElement('div');
+                    responsive.className = 'video-responsive';
+                    responsive.appendChild(iframe);
+                    container.appendChild(responsive);
+                } else {
+                    const shell = document.createElement('div');
+                    shell.className = 'activity-frame-shell';
+                    shell.appendChild(iframe);
+                    container.appendChild(shell);
+                }
+
+                const fallback = document.createElement('div');
+                fallback.className = 'activity-fallback';
+                const link = document.createElement('a');
+                link.href = item.url;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.textContent = 'Open activity in a new tab if the provider blocks embedding';
+                fallback.appendChild(link);
+                container.appendChild(fallback);
+            });
+        }
+
+        function renderAdminSettings() {
+            const container = document.getElementById('admin-url-container');
+            if (!container) return;
+            container.innerHTML = "";
+            for (let stage = 1; stage <= 5; stage++) {
+                const stageBox = document.createElement('div');
+                stageBox.className = 'admin-stage';
+                stageBox.style.borderLeft = `8px solid ${stageColors[stage-1]}`;
+                const heading = document.createElement('h3');
+                heading.style.color = stageColors[stage-1];
+                heading.textContent = `STAGE ${stage}: ${stageNames[stage-1]}`;
+                stageBox.appendChild(heading);
+
+                const grid = document.createElement('div');
+                grid.className = 'admin-url-grid';
+                activityUrls.filter(item => item.stage === stage).forEach(item => {
+                    const index = activityUrls.indexOf(item);
+                    const field = document.createElement('div');
+                    field.className = 'admin-url-field';
+                    const label = document.createElement('label');
+                    label.htmlFor = `admin-url-${index}`;
+                    label.textContent = item.type.toUpperCase();
+                    const input = document.createElement('input');
+                    input.type = 'url';
+                    input.id = `admin-url-${index}`;
+                    input.value = item.url;
+                    input.placeholder = 'https://...';
+                    input.autocomplete = 'off';
+                    label.textContent = `${item.type} URL`;
+                    field.append(label, input);
+                    grid.appendChild(field);
+                });
+                stageBox.appendChild(grid);
+                container.appendChild(stageBox);
+            }
+            setDatabaseStatus(activityDatabaseStatus, activityDatabaseStatus.toLowerCase().includes('unavailable'));
+        }
+
+        async function postActivityToDatabase(item) {
+            const body = new URLSearchParams();
+            body.set('stage', String(item.stage));
+            body.set('type', String(item.type).toLowerCase());
+            body.set('title', String(item.focus || ''));
+            body.set('url', String(item.url || ''));
+
+            try {
+                const response = await fetchWithTimeout(QUESTIFY_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                    body: body.toString(),
+                    redirect: 'follow'
+                }, 12000);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const text = await response.text();
+                if (text) {
+                    try {
+                        const json = JSON.parse(text);
+                        if (json && json.success === false) throw new Error(json.message || 'Database rejected update');
+                    } catch(parseError) {
+                        if (parseError instanceof SyntaxError) {
+                            // Some Apps Script deployments may return an opaque/HTML redirect response even after a successful write.
+                        } else {
+                            throw parseError;
+                        }
+                    }
+                }
+                return true;
+            } catch(error) {
+                // Fallback for deployments that accept the POST but do not expose a CORS-readable response.
+                try {
+                    await fetch(QUESTIFY_API_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                        body: body.toString()
+                    });
+                    return true;
+                } catch(secondError) {
+                    return false;
+                }
+            }
+        }
+
+        function readAdminInputs() {
+            const next = [];
+            for (let i = 0; i < DEFAULT_ACTIVITY_URLS.length; i++) {
+                const input = document.getElementById(`admin-url-${i}`);
+                const value = input ? input.value.trim() : activityUrls[i].url;
+                if (value && !normalizeEmbedUrl(value)) {
+                    showAlert(`Please enter a valid HTTP/HTTPS URL for Stage ${DEFAULT_ACTIVITY_URLS[i].stage} ${DEFAULT_ACTIVITY_URLS[i].type}, or leave it empty.`);
+                    if (input) input.focus();
+                    return null;
+                }
+                next.push({ ...activityUrls[i], url: value });
+            }
+            return next;
+        }
+
+        function setAdminButtonsDisabled(disabled) {
+            const saveBtn = document.getElementById('btn-save-admin-urls');
+            const clearBtn = document.getElementById('btn-clear-admin-urls');
+            const resetBtn = document.getElementById('btn-reset-admin-urls');
+            if (saveBtn) saveBtn.disabled = disabled;
+            if (clearBtn) clearBtn.disabled = disabled;
+            if (resetBtn) resetBtn.disabled = disabled;
+        }
+
+        async function saveAdminUrls() {
+            const nextActivities = readAdminInputs();
+            if (!nextActivities) return;
+
+            setAdminButtonsDisabled(true);
+            setDatabaseStatus('Saving 15 activity URLs to Google Sheet...');
+            activityUrls = nextActivities;
+            cacheActivityUrls();
+            renderActivityEmbeds();
+
+            let savedCount = 0;
+            for (let i = 0; i < activityUrls.length; i++) {
+                setDatabaseStatus(`Saving URL ${i + 1} of ${activityUrls.length} to Google Sheet...`);
+                if (await postActivityToDatabase(activityUrls[i])) savedCount++;
+            }
+
+            if (savedCount !== activityUrls.length) {
+                setDatabaseStatus(`Only ${savedCount} of ${activityUrls.length} URLs could be sent. Local cache retained.`, true);
+                setAdminButtonsDisabled(false);
+                showAlert(`Database update incomplete: ${savedCount} of ${activityUrls.length} URLs were sent. Please check the Apps Script deployment and try again.`);
+                return;
+            }
+
+            const verified = await refreshActivityUrlsFromDatabase(false);
+            setAdminButtonsDisabled(false);
+            if (verified) {
+                showAlert('All 15 activity URLs were saved to Google Sheet and reloaded successfully.');
+            } else {
+                showAlert('All 15 updates were sent to Google Sheet, but Questify could not read the database back for verification. The local cache has been retained.');
+            }
+        }
+
+        async function clearAdminUrls() {
+            if (!window.confirm('Clear all 15 activity URLs from Questify and Google Sheet?')) return;
+
+            setAdminButtonsDisabled(true);
+            activityUrls = activityUrls.map(item => ({ ...item, url: '' }));
+            cacheActivityUrls();
+            renderActivityEmbeds();
+            renderAdminSettings();
+            setDatabaseStatus('Clearing all activity URLs in Google Sheet...');
+
+            let savedCount = 0;
+            for (let i = 0; i < activityUrls.length; i++) {
+                setDatabaseStatus(`Clearing URL ${i + 1} of ${activityUrls.length}...`);
+                if (await postActivityToDatabase(activityUrls[i])) savedCount++;
+            }
+
+            setAdminButtonsDisabled(false);
+            if (savedCount === activityUrls.length) {
+                await refreshActivityUrlsFromDatabase(false);
+                showAlert('All activity URLs were cleared. You can now paste new URLs and save.');
+            } else {
+                setDatabaseStatus(`URLs cleared locally, but only ${savedCount} of ${activityUrls.length} database updates were sent.`, true);
+                showAlert('URLs are cleared in this browser, but the Google Sheet update was incomplete.');
+            }
+        }
+
+        async function resetAdminUrls() {
+            setAdminButtonsDisabled(true);
+            activityUrls = DEFAULT_ACTIVITY_URLS.map(item => ({ ...item }));
+            cacheActivityUrls();
+            renderActivityEmbeds();
+            renderAdminSettings();
+            setDatabaseStatus('Restoring default URLs in Google Sheet...');
+
+            let savedCount = 0;
+            for (let i = 0; i < activityUrls.length; i++) {
+                setDatabaseStatus(`Saving URL ${i + 1} of ${activityUrls.length} to Google Sheet...`);
+                if (await postActivityToDatabase(activityUrls[i])) savedCount++;
+            }
+            setAdminButtonsDisabled(false);
+
+            if (savedCount === activityUrls.length) {
+                await refreshActivityUrlsFromDatabase(false);
+                showAlert('Default activity URLs restored in Google Sheet.');
+            } else {
+                setDatabaseStatus(`Defaults restored locally, but only ${savedCount} of ${activityUrls.length} database updates were sent.`, true);
+                showAlert('Default URLs are active in this browser, but the Google Sheet update was incomplete.');
+            }
         }
 
         /* =========================================================
@@ -773,6 +1223,8 @@
             document.getElementById('viewer-badge').style.backgroundColor = stageColors[stageIndex];
             document.getElementById('viewer-title').innerText = stageNames[stageIndex];
             document.getElementById('viewer-title').style.color = stageColors[stageIndex];
+            const currentActivity = activityUrls[stepIndex];
+            document.getElementById('viewer-subtitle').innerText = currentActivity ? currentActivity.focus : "Activity instructions";
             
             document.querySelectorAll('.embed-wrapper').forEach(el => el.classList.remove('active'));
             const embedDiv = document.getElementById(`embed-${stepIndex}`);
